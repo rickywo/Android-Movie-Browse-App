@@ -3,7 +3,9 @@ package edu.ricky.mada2;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,36 +38,18 @@ public class MainActivity extends AppCompatActivity {
     private EditText edtSeach;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Initial DbModel with application context
         DbModel.getSingleton(this.getApplicationContext());
         setContentView(R.layout.activity_main);
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.movie_recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new MainRecyclerViewAdapter(this);
-        mRecyclerView.setAdapter(mAdapter);
-        ((MainRecyclerViewAdapter) mAdapter).setOnItemClickListener(
-                new MainRecyclerViewAdapter.MyClickListener() {
-                    @Override
-                    public void onItemClick(List<Movie> dataset,int position, View v) {
-                        Intent intent = new Intent(getBaseContext(), MovieActivity.class);
-                        Toast.makeText(getApplicationContext(), (String) dataset.get(position).getTitle(),
-                                Toast.LENGTH_SHORT).show();
-                        intent.putExtra("id", dataset.get(position).getImdbId());
-
-                        startActivity(intent);
-                    }
-                });
-
+        initToolbar();
+        initDrawer();
+        initRecyclerView();
     }
 
     @Override
@@ -103,10 +87,10 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    protected void handleMenuSearch(){
+    protected void handleMenuSearch() {
         ActionBar action = getSupportActionBar(); //get the actionbar
 
-        if(isSearchOpened){ //test if the search is open
+        if (isSearchOpened) { //test if the search is open
 
             action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
             action.setDisplayShowTitleEnabled(true); //show the title in the action bar
@@ -126,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
             action.setCustomView(R.layout.search_bar);//add the custom view
             action.setDisplayShowTitleEnabled(false); //hide the title
 
-            edtSeach = (EditText)action.getCustomView().findViewById(R.id.edtSearch); //the text editor
+            edtSeach = (EditText) action.getCustomView().findViewById(R.id.edtSearch); //the text editor
             //this is a listener to do a search when the user clicks on search button
             edtSeach.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
@@ -136,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                         v.setText("");
                     }
 
-                    return(true);
+                    return (true);
                 }
             });
 
@@ -155,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(isSearchOpened) {
+        if (isSearchOpened) {
             handleMenuSearch();
             return;
         }
@@ -175,4 +159,39 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("title", movieTitle);
         startActivity(intent);
     }
+
+    private void initDrawer() {
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);
+        mDrawerToggle.syncState();
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
+
+    private void initToolbar() {
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+    }
+
+    private void initRecyclerView() {
+        mRecyclerView = (RecyclerView) findViewById(R.id.movie_recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mAdapter = new MainRecyclerViewAdapter(this);
+        mRecyclerView.setAdapter(mAdapter);
+        ((MainRecyclerViewAdapter) mAdapter).setOnItemClickListener(rvItemClickListener);
+    }
+
+    private MainRecyclerViewAdapter.MyClickListener rvItemClickListener = new MainRecyclerViewAdapter.MyClickListener() {
+        @Override
+        public void onItemClick(List<Movie> dataset, int position, View v) {
+            Intent intent = new Intent(getBaseContext(), MovieActivity.class);
+            Toast.makeText(getApplicationContext(), (String) dataset.get(position).getTitle(),
+                    Toast.LENGTH_SHORT).show();
+            intent.putExtra("id", dataset.get(position).getImdbId());
+
+            startActivity(intent);
+        }
+    };
 }

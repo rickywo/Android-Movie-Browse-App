@@ -4,14 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="edu.ricky.mada2.MainActivity">
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/movie_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:scrollbars="vertical"
-        android:paddingTop="?attr/actionBarSize"
-        android:clipToPadding="false"/>
+
     <LinearLayout
         android:id="@+id/toolbar_container"
         android:layout_width="fill_parent"
@@ -23,6 +16,39 @@
             android:id="@+id/toolbar"
             layout="@layout/toolbar_main" />
     </LinearLayout>
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/drawer"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/toolbar_container">
+
+        <!-- Content -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/movie_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:scrollbars="vertical"
+                android:clipToPadding="false"/>
+        </LinearLayout>
+
+        <!-- Side Drawer -->
+        <LinearLayout
+            android:id="@+id/drawer_view"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="#88FFFFFF"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+    </android.support.v4.widget.DrawerLayout>
+
     <!--<android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
