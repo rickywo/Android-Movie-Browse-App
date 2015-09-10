@@ -1,6 +1,5 @@
 package edu.ricky.mada2.model;
 
-import android.content.ContentValues;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -109,7 +108,6 @@ public class MovieModel {
         Map<String, String> map = db.getAllMovies();
         for (Map.Entry<String, String> entry : map.entrySet()) {
             try {
-                Log.e("MovieModel", "load");
                 JSONObject jo = new JSONObject(entry.getValue());
                 Movie m = new Movie(jo);
                 addMovie(m);

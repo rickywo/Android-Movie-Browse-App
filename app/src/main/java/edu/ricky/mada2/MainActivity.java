@@ -1,6 +1,5 @@
 package edu.ricky.mada2;
 
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,14 +7,11 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -27,7 +23,6 @@ import butterknife.*;
 import edu.ricky.mada2.controller.MainRecyclerViewAdapter;
 import edu.ricky.mada2.model.DbModel;
 import edu.ricky.mada2.model.Movie;
-import edu.ricky.mada2.utility.OmdbAsyncTask;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -36,17 +31,16 @@ public class MainActivity extends AppCompatActivity {
     Toolbar mToolbar;
     @Bind(R.id.movie_recycler_view)
     RecyclerView mRecyclerView;
-    public static Context context;
     private MenuItem mSearchAction;
     private boolean isSearchOpened = false;
     private EditText edtSeach;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private DbModel dbModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dbModel = DbModel.getSingleton(this.getApplicationContext());
+        // Initial DbModel with application context
+        DbModel.getSingleton(this.getApplicationContext());
         setContentView(R.layout.activity_main);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -91,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         mSearchAction = menu.findItem(R.id.action_search);
-        Log.e("sagaga","onPrepareOptionsMenu");
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -101,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        Log.e("sagaga","onOptionsItemSelected");
         switch (id) {
             case R.id.action_search:
                 handleMenuSearch();
@@ -112,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void handleMenuSearch(){
-        Log.e("sagaga","handleMenuSearch");
         ActionBar action = getSupportActionBar(); //get the actionbar
 
         if(isSearchOpened){ //test if the search is open
@@ -146,12 +137,6 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     return(true);
-                    /*doSearch();
-                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-
-                        return true;
-                    }
-                    return false;*/
                 }
             });
 
@@ -167,28 +152,27 @@ public class MainActivity extends AppCompatActivity {
             isSearchOpened = true;
         }
     }
-    /*@Override
+
+    @Override
     public void onBackPressed() {
         if(isSearchOpened) {
             handleMenuSearch();
             return;
         }
         super.onBackPressed();
-    }*/
+    }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
         ((MainRecyclerViewAdapter) mAdapter).close();
+        super.onStop();
     }
 
     private void doSearch(String movieTitle) {
         Intent intent = new Intent(getBaseContext(), MovieActivity.class);
-        Log.e("MainActivity", "doSearch");
         Toast.makeText(getApplicationContext(), movieTitle,
                 Toast.LENGTH_SHORT).show();
         intent.putExtra("title", movieTitle);
-
         startActivity(intent);
     }
 }

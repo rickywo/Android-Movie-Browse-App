@@ -1,8 +1,5 @@
 package edu.ricky.mada2.model;
 
-import android.net.Uri;
-import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.Serializable;

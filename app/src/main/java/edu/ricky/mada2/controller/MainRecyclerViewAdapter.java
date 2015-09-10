@@ -149,7 +149,6 @@ public class MainRecyclerViewAdapter extends RecyclerView
     }
 
     public void close() {
-        Log.e("MainRecyler", "close");
         mModel.close();
     }
 }
