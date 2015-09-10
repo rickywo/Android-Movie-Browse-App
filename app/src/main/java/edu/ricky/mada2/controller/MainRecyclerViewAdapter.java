@@ -4,6 +4,7 @@ package edu.ricky.mada2.controller;
  * Created by Ricky Wu on 2015/9/7.
  */
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,7 +87,7 @@ public class MainRecyclerViewAdapter extends RecyclerView
         holder.genre.setText(mDataset.get(position).getGenre());
         holder.year.setText(mDataset.get(position).getYear());
         holder.plot.setText(mDataset.get(position).getPlot());
-        holder.rating.setText(Float.toString(mDataset.get(position).getMyRating()));
+        holder.rating.setText(Double.toString(mDataset.get(position).getMyRating()));
         Picasso.with(mActivity)
                 .load(mDataset.get(position).getIconUrl())
                 .into(holder.poster/*(), PicassoPalette.with(mDataset.get(position).getIconUrl(), holder.poster)
@@ -145,5 +146,10 @@ public class MainRecyclerViewAdapter extends RecyclerView
 
     public interface MyClickListener {
         void onItemClick(List<Movie> dataset,int position, View v);
+    }
+
+    public void close() {
+        Log.e("MainRecyler", "close");
+        mModel.close();
     }
 }

@@ -77,8 +77,8 @@ public class MovieDetailController {
         String title;
         title = String.format("%s (%s)", tempMovie.getTitle(), tempMovie.getYear());
         this.mTitle.setText(title);
-        this.mRatingBar.setRating(tempMovie.getMyRating());
-        Picasso.with(mActivity).load(tempMovie.getIconUri()).into(mPoster);
+        this.mRatingBar.setRating(((float) tempMovie.getMyRating()));
+        Picasso.with(mActivity).load(tempMovie.getIconUrl()).into(mPoster);
         mRated.setText(tempMovie.getMovieRated());
         mRuntime.setText(tempMovie.getMovieRuntime());
         mLang.setText(tempMovie.getMovieLang());

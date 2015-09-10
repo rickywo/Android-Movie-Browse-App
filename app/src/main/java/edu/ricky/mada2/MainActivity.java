@@ -25,6 +25,7 @@ import java.util.List;
 
 import butterknife.*;
 import edu.ricky.mada2.controller.MainRecyclerViewAdapter;
+import edu.ricky.mada2.model.DbModel;
 import edu.ricky.mada2.model.Movie;
 import edu.ricky.mada2.utility.OmdbAsyncTask;
 
@@ -35,14 +36,17 @@ public class MainActivity extends AppCompatActivity {
     Toolbar mToolbar;
     @Bind(R.id.movie_recycler_view)
     RecyclerView mRecyclerView;
+    public static Context context;
     private MenuItem mSearchAction;
     private boolean isSearchOpened = false;
     private EditText edtSeach;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private DbModel dbModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dbModel = DbModel.getSingleton(this.getApplicationContext());
         setContentView(R.layout.activity_main);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -172,9 +176,15 @@ public class MainActivity extends AppCompatActivity {
         super.onBackPressed();
     }*/
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ((MainRecyclerViewAdapter) mAdapter).close();
+    }
 
     private void doSearch(String movieTitle) {
         Intent intent = new Intent(getBaseContext(), MovieActivity.class);
+        Log.e("MainActivity", "doSearch");
         Toast.makeText(getApplicationContext(), movieTitle,
                 Toast.LENGTH_SHORT).show();
         intent.putExtra("title", movieTitle);

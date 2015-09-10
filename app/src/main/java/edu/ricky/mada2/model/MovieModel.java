@@ -1,5 +1,8 @@
 package edu.ricky.mada2.model;
 
+import android.content.ContentValues;
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
@@ -16,6 +19,7 @@ public class MovieModel {
 
     // Model
     private Map<String, Movie> movieMap;
+    private DbModel db;
 
     public static MovieModel getSingleton()
     {
@@ -30,7 +34,9 @@ public class MovieModel {
     private MovieModel()
     {
         this.movieMap = new HashMap<>();
-        for(String s: MovieSamples.mvJsons) {
+        this.db = DbModel.getSingleton(null);
+        load();
+        /*for(String s: MovieSamples.mvJsons) {
             JSONObject jsonObj = null;
             try {
                 jsonObj = new JSONObject(s);
@@ -40,7 +46,7 @@ public class MovieModel {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
     }
 
     // Model Access
@@ -92,13 +98,30 @@ public class MovieModel {
         return movieMap.size();
     }
 
-    public boolean save() {
+    public void save() {
         //TODO: Save Movies in the Map into Sqlite
-        return true;
+        db.saveAllMovies(this.movieMap);
+        return;
     }
 
-    public boolean load() {
+    public void load() {
         //TODO: Load movies from Sqlite to Map
-        return true;
+        Map<String, String> map = db.getAllMovies();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            try {
+                Log.e("MovieModel", "load");
+                JSONObject jo = new JSONObject(entry.getValue());
+                Movie m = new Movie(jo);
+                addMovie(m);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return;
+    }
+
+    public void close() {
+        save();
+        db.close();
     }
 }

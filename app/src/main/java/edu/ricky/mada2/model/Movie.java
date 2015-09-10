@@ -30,7 +30,7 @@ public class Movie implements Serializable {
 
     // General information from IMDB
 
-    private String movieTitle;
+    /*private String movieTitle;
     private String movieYear;
     private String movieGenre;
     private String movieRated;
@@ -41,7 +41,8 @@ public class Movie implements Serializable {
     private String movieImageURL;
     private String moviePlot;
     private String movieImdbRating;
-    private String movieImdbId;
+    private String movieImdbId;*/
+    private JSONObject movieJson;
 
     // self-defined variablea
     private float movieMyRating; // Personal rating of this movie
@@ -49,6 +50,7 @@ public class Movie implements Serializable {
     List<Event> movieEvents;
 
     public Movie(JSONObject tempObject) {
+        this.movieJson = tempObject;
         try {
             setTitle(tempObject.getString(TITLE));}
         catch (JSONException e) {
@@ -116,121 +118,229 @@ public class Movie implements Serializable {
         this.movieEvents = new ArrayList<>();
     }
 
-
+    public String getJsonString() {
+        return movieJson.toString();
+    }
 
     public String getTitle() {
-        return this.movieTitle;
+        try {
+            return movieJson.getString(TITLE);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void setTitle(String title) {
-        Log.i("MAD", title);
-        this.movieTitle = title;
+        try {
+            movieJson.put(TITLE, title);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getYear() {
-        return this.movieYear;
+        try {
+            return movieJson.getString(YEAR);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void setYear(String year) {
-        Log.i("MAD", "setYear");
-        this.movieYear = year;
+        try {
+            movieJson.put(YEAR, year);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getGenre() {
-        return this.movieGenre;
+        try {
+            return movieJson.getString(GENRES);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void setGenre(String genre) {
-        Log.i("MAD", "setGenre");
-        this.movieGenre = genre;
+        try {
+            movieJson.put(GENRES, genre);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getImdbId() {
-        if (this.movieImdbId == null)
+        try {
+            return movieJson.getString(IMDB_ID);
+        } catch (JSONException e) {
+            e.printStackTrace();
             return null;
-        else
-            return  this.movieImdbId;
+        }
     }
 
     public void setImdbId(String id) {
-        if (id == null)
-            return;
-        else
-            this.movieImdbId = id;
+        try {
+            movieJson.put(IMDB_ID, id);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getImdbRating() {
-        return this.movieImdbRating;
+        try {
+            return movieJson.getString(IMDB_RATING);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void setImdbRating(String imdbRating) {
-        this.movieImdbRating = imdbRating;
+        try {
+            movieJson.put(IMDB_RATING, imdbRating);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
-    public float getMyRating() {
-        return this.movieMyRating;
+    public double getMyRating() {
+        try {
+            return movieJson.getDouble(MY_RATING);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
-    public void setRating(float r) {
-        this.movieMyRating = r;
+    public void setRating(double r) {
+        try {
+            movieJson.put(IMDB_RATING, r);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
-    public String getIconUrl() {return this.movieImageURL;}
+    public String getIconUrl() {
+        try {
+            return movieJson.getString(POSTER);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public void setIconUrl(String iconUrl) {
-        this.movieImageURL = iconUrl;
+        try {
+            movieJson.put(POSTER, iconUrl);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getPlot() {
-        return this.moviePlot;
+        try {
+            return movieJson.getString(PLOT);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void setPlot(String plot) {
-        this.moviePlot = plot;
-    }
-
-    public Uri getIconUri(){
-        Uri uri = Uri.parse(this.movieImageURL);
-        return uri;
+        try {
+            movieJson.put(PLOT, plot);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getMovieRuntime() {
-        return movieRuntime;
+        try {
+            return movieJson.getString(RUNTIME);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void setMovieRuntime(String movieRuntime) {
-        this.movieRuntime = movieRuntime;
+        try {
+            movieJson.put(RUNTIME, movieRuntime);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getMovieRated() {
-        return movieRated;
+        try {
+            return movieJson.getString(RATED);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void setMovieRated(String movieRated) {
-        this.movieRated = movieRated;
+        try {
+            movieJson.put(RATED, movieRated);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getMovieLang() {
-        return movieLang;
+        try {
+            return movieJson.getString(LANG);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void setMovieLang(String movieLang) {
-        this.movieLang = movieLang;
+        try {
+            movieJson.put(LANG, movieLang);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getMovieDirector() {
-        return movieDirector;
+        try {
+            return movieJson.getString(DIRECTOR);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void setMovieDirector(String movieDirector) {
-        this.movieDirector = movieDirector;
+        try {
+            movieJson.put(DIRECTOR, movieDirector);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getMovieActors() {
-        return movieActors;
+        try {
+            return movieJson.getString(ACTORS);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void setMovieActors(String movieActors) {
-        this.movieActors = movieActors;
+        try {
+            movieJson.put(ACTORS, movieActors);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void addEvent(Event e) {
