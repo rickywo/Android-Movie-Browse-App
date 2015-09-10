@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="window_background">#ECEFF1</color>
+
+    <color name="my_primary">#2d5d82</color>
+    <color name="my_primary_dark">#21425d</color>
+    <color name="my_accent">#607D8B</color>
+    <color name="my_primary_light">#B3E5FC</color>
+    <color name="my_primary_text">#ffffff</color>
+    <color name="my_secondary_text">#ffffff</color>
+    <color name="my_icons">#FFFFFF</color>
+    <color name="my_divider">#B6B6B6</color>
+
+    <!--<color name="my_primary">#3F51B5</color>
+    <color name="my_primary_dark">#303F9F</color>
+    <color name="my_primary_light">#C5CAE9</color>
+    <color name="my_accent">#607D8B</color>
+    <color name="my_primary_text">#212121</color>
+    <color name="my_secondary_text">#727272</color>
+    <color name="my_icons">#FFFFFF</color>
+    <color name="my_divider">#B6B6B6</color>-->
+
+    <color name="cardview_background">#FFFFFF</color>
+    <color name="title_font_color">#ff181818</color>
+    <color name="text_font_color">#C8C8C8</color>
+    <color name="toolbar_title_color">#ffffffff</color>
+    <color name="title">#ff494949</color>
+    <color name="genre">#666666</color>
+    <color name="year">#888888</color>
+</resources>

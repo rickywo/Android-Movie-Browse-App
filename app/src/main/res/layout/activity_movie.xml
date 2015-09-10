@@ -1,0 +1,188 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="edu.ricky.mada2.MovieActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/cardview_background">
+        <LinearLayout
+            android:id="@+id/toolbar_container"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/toolbar_movie"
+                layout="@layout/toolbar_movie" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:orientation="vertical">
+            <!-- Reted -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="3dp"
+                android:textSize="@dimen/genre_font_size"
+                android:textStyle="bold"
+                android:textColor="@color/genre"
+                android:text="Rated"
+                android:id="@+id/movie_activity_rated_label"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/genre_font_size"
+                android:textColor="@color/genre"
+                android:text="New Text"
+                android:id="@+id/movie_activity_rated_textview"/>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="3dp"
+                android:background="@android:color/darker_gray"/>
+
+            <!-- Runtime -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="3dp"
+                android:textSize="@dimen/genre_font_size"
+                android:textStyle="bold"
+                android:textColor="@color/genre"
+                android:text="Runtime"
+                android:id="@+id/movie_activity_runtime_label"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/genre_font_size"
+                android:textColor="@color/genre"
+                android:text="New Text"
+                android:id="@+id/movie_activity_runtime_textview"/>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="3dp"
+                android:background="@android:color/darker_gray"/>
+            <!-- Language -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="3dp"
+                android:textSize="@dimen/genre_font_size"
+                android:textStyle="bold"
+                android:textColor="@color/genre"
+                android:text="Language"
+                android:id="@+id/movie_activity_lang_label"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/genre_font_size"
+                android:textColor="@color/genre"
+                android:text="New Text"
+                android:id="@+id/movie_activity_lang_textview"/>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="3dp"
+                android:background="@android:color/darker_gray"/>
+            <!-- Genre -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="3dp"
+                android:textSize="@dimen/genre_font_size"
+                android:textStyle="bold"
+                android:textColor="@color/genre"
+                android:text="Genre"
+                android:id="@+id/movie_activity_genre_label"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/genre_font_size"
+                android:textColor="@color/genre"
+                android:text="New Text"
+                android:id="@+id/movie_activity_genre_textview"/>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="3dp"
+                android:background="@android:color/darker_gray"/>
+
+            <!-- Director -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="3dp"
+                android:textSize="@dimen/genre_font_size"
+                android:textStyle="bold"
+                android:textColor="@color/genre"
+                android:text="Director"
+                android:id="@+id/movie_activity_director_label"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/genre_font_size"
+                android:textColor="@color/genre"
+                android:text="New Text"
+                android:id="@+id/movie_activity_director_textview"/>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="3dp"
+                android:background="@android:color/darker_gray"/>
+
+            <!-- Actors -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="3dp"
+                android:textSize="@dimen/genre_font_size"
+                android:textStyle="bold"
+                android:textColor="@color/genre"
+                android:text="Actors"
+                android:id="@+id/movie_activity_actors_label"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/genre_font_size"
+                android:textColor="@color/genre"
+                android:text="New Text"
+                android:id="@+id/movie_activity_actors_textview"/>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="3dp"
+                android:background="@android:color/darker_gray"/>
+            <!-- Plot -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="3dp"
+                android:textSize="@dimen/genre_font_size"
+                android:textStyle="bold"
+                android:textColor="@color/genre"
+                android:text="Storyline"
+                android:id="@+id/movie_activity_plot_label"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/genre_font_size"
+                android:textColor="@color/genre"
+                android:text="New Text"
+                android:id="@+id/movie_activity_plot_textview"/>
+        </LinearLayout>
+    </LinearLayout>
+
+
+</ScrollView>

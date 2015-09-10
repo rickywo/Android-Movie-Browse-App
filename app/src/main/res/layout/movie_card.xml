@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_gravity="center"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        card_view:cardBackgroundColor="@color/cardview_background"
+        android:layout_margin="5dp">
+        <!--card_view:cardCornerRadius="10dp"-->
+
+        <LinearLayout
+            android:id="@+id/card_view_container"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:orientation="horizontal"
+            android:padding="@dimen/cardview_padding">
+
+            <ImageView
+                android:id="@+id/movie_thumbnail_imageview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/poster_margin_right" />
+            <LinearLayout
+                android:id="@+id/movie_card_info_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/movie_title_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/title_font_color"
+                    android:textSize="@dimen/title_font_size"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"
+                    android:ellipsize="marquee"
+                    android:maxLines="2" />
+
+                <TextView
+                    android:id="@+id/movie_year_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/year_font_size"
+                    android:textColor="@color/year"/>
+
+                <LinearLayout
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <TextView
+                    android:id="@+id/movie_rating_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/rating_font_size"
+                    android:textColor="@color/year" />
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/star_imageview"
+                        android:src="@drawable/ic_star_rate_black_18dp"/>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/movie_genre_textview"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/genre_font_size"
+                    android:textStyle="bold"
+                    android:textColor="@color/genre"
+                    android:maxLines="1"
+                    android:ellipsize="marquee" />
+                <TextView
+                    android:id="@+id/movie_plot_textview"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/genre_font_size"
+                    android:textColor="@color/title"
+                    android:maxLines="5"
+                    android:ellipsize="marquee" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>
