@@ -39,12 +39,21 @@
         <!-- Side Drawer -->
         <LinearLayout
             android:id="@+id/drawer_view"
-            android:layout_width="200dp"
+            android:layout_width="@dimen/drawer_layout_width"
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:background="#88FFFFFF"
             android:orientation="vertical">
-
+            <android.support.design.widget.NavigationView
+                android:id="@+id/vNavigation"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                android:background="#ffffff"
+                app:headerLayout="@layout/drawer_menu_header"
+                app:itemIconTint="#8b8b8b"
+                app:itemTextColor="#666666"
+                app:menu="@menu/drawer_menu" />
         </LinearLayout>
 
     </android.support.v4.widget.DrawerLayout>

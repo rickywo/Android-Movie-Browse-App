@@ -3,6 +3,8 @@ package edu.ricky.mada2;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -29,10 +31,8 @@ import edu.ricky.mada2.model.Movie;
 
 public class MainActivity extends AppCompatActivity {
 
-    @Bind(R.id.toolbar)
-    Toolbar mToolbar;
-    @Bind(R.id.movie_recycler_view)
-    RecyclerView mRecyclerView;
+    private Toolbar mToolbar;
+    private RecyclerView mRecyclerView;
     private MenuItem mSearchAction;
     private boolean isSearchOpened = false;
     private EditText edtSeach;
@@ -49,6 +49,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initToolbar();
         initDrawer();
+        NavigationView navigationView = (NavigationView) findViewById(R.id.vNavigation);
+        if (navigationView != null) {
+            setupNavigationDrawerContent(navigationView);
+        }
+
+        setupNavigationDrawerContent(navigationView);
         initRecyclerView();
     }
 
@@ -194,4 +200,41 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
     };
+
+    private void setupNavigationDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        switch (menuItem.getItemId()) {
+                            case R.id.menu_my_movies:
+                                menuItem.setChecked(true);
+                                show(menuItem.getTitle().toString());
+                                mDrawerLayout.closeDrawer(GravityCompat.START);
+                                return true;
+                            case R.id.menu_my_events:
+                                menuItem.setChecked(true);
+                                show(menuItem.getTitle().toString());
+                                mDrawerLayout.closeDrawer(GravityCompat.START);
+                                return true;
+                            case R.id.menu_invitations:
+                                menuItem.setChecked(true);
+                                show(menuItem.getTitle().toString());
+                                mDrawerLayout.closeDrawer(GravityCompat.START);
+                                return true;
+                            case R.id.menu_notifications:
+                                menuItem.setChecked(true);
+                                show(menuItem.getTitle().toString());
+                                mDrawerLayout.closeDrawer(GravityCompat.START);
+                                return true;
+                        }
+                        return true;
+                    }
+                });
+    }
+
+    private void show(String s) {
+        Toast.makeText(getApplicationContext(), s,
+                Toast.LENGTH_SHORT).show();
+    }
 }

@@ -10,6 +10,7 @@
     <color name="my_secondary_text">#ffffff</color>
     <color name="my_icons">#FFFFFF</color>
     <color name="my_divider">#B6B6B6</color>
+    <color name="circle_image_border">#ff000000</color>
 
     <!--<color name="my_primary">#3F51B5</color>
     <color name="my_primary_dark">#303F9F</color>
