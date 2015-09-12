@@ -18,7 +18,6 @@ public class MovieModel {
 
     // Model
     private Map<String, Movie> movieMap;
-    private DbModel db;
 
     public static MovieModel getSingleton()
     {
@@ -33,8 +32,7 @@ public class MovieModel {
     private MovieModel()
     {
         this.movieMap = new HashMap<>();
-        this.db = DbModel.getSingleton(null);
-        load();
+
         /*for(String s: MovieSamples.mvJsons) {
             JSONObject jsonObj = null;
             try {
@@ -58,9 +56,12 @@ public class MovieModel {
         return this.movieMap.containsKey(imdbId);
     }
 
+    public Map<String, Movie> getMovieMap() {
+        return movieMap;
+    }
+
     public List<Movie> getAllMovies()
     {
-
         return new ArrayList(movieMap.values());
     }
 
@@ -97,29 +98,6 @@ public class MovieModel {
         return movieMap.size();
     }
 
-    public void save() {
-        //TODO: Save Movies in the Map into Sqlite
-        db.saveAllMovies(this.movieMap);
-        return;
-    }
-
-    public void load() {
-        //TODO: Load movies from Sqlite to Map
-        Map<String, String> map = db.getAllMovies();
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            try {
-                JSONObject jo = new JSONObject(entry.getValue());
-                Movie m = new Movie(jo);
-                addMovie(m);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return;
-    }
-
     public void close() {
-        save();
-        db.close();
     }
 }

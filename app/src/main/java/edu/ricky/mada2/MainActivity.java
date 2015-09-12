@@ -2,8 +2,10 @@ package edu.ricky.mada2;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -29,23 +31,23 @@ import edu.ricky.mada2.model.DbModel;
 import edu.ricky.mada2.model.Movie;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MovielistFragment.OnFragmentInteractionListener{
 
     private Toolbar mToolbar;
-    private RecyclerView mRecyclerView;
+
     private MenuItem mSearchAction;
     private boolean isSearchOpened = false;
     private EditText edtSeach;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
+    private MovielistFragment mListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Initial DbModel with application context
-        DbModel.getSingleton(this.getApplicationContext());
+        // DbModel.getSingleton(this.getApplicationContext());
         setContentView(R.layout.activity_main);
         initToolbar();
         initDrawer();
@@ -53,15 +55,18 @@ public class MainActivity extends AppCompatActivity {
         if (navigationView != null) {
             setupNavigationDrawerContent(navigationView);
         }
-
+        mListFragment = new MovielistFragment();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment_placeholder, mListFragment);
+        ft.commit();
         setupNavigationDrawerContent(navigationView);
-        initRecyclerView();
+        //
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        ((MainRecyclerViewAdapter) mAdapter).reloadDataset();
+        mListFragment.reloadDataset();
     }
 
 
@@ -154,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        ((MainRecyclerViewAdapter) mAdapter).close();
+        mListFragment.releaseResource();
         super.onStop();
     }
 
@@ -179,27 +184,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
-    private void initRecyclerView() {
-        mRecyclerView = (RecyclerView) findViewById(R.id.movie_recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new MainRecyclerViewAdapter(this);
-        mRecyclerView.setAdapter(mAdapter);
-        ((MainRecyclerViewAdapter) mAdapter).setOnItemClickListener(rvItemClickListener);
-    }
 
-    private MainRecyclerViewAdapter.MyClickListener rvItemClickListener = new MainRecyclerViewAdapter.MyClickListener() {
-        @Override
-        public void onItemClick(List<Movie> dataset, int position, View v) {
-            Intent intent = new Intent(getBaseContext(), MovieActivity.class);
-            Toast.makeText(getApplicationContext(), (String) dataset.get(position).getTitle(),
-                    Toast.LENGTH_SHORT).show();
-            intent.putExtra("id", dataset.get(position).getImdbId());
-
-            startActivity(intent);
-        }
-    };
 
     private void setupNavigationDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
@@ -227,6 +212,16 @@ public class MainActivity extends AppCompatActivity {
                                 show(menuItem.getTitle().toString());
                                 mDrawerLayout.closeDrawer(GravityCompat.START);
                                 return true;
+                            case R.id.menu_login:
+                                menuItem.setChecked(true);
+                                show(menuItem.getTitle().toString());
+                                mDrawerLayout.closeDrawer(GravityCompat.START);
+                                return true;
+                            case R.id.menu_logout:
+                                menuItem.setChecked(true);
+                                show(menuItem.getTitle().toString());
+                                mDrawerLayout.closeDrawer(GravityCompat.START);
+                                return true;
                         }
                         return true;
                     }
@@ -236,5 +231,10 @@ public class MainActivity extends AppCompatActivity {
     private void show(String s) {
         Toast.makeText(getApplicationContext(), s,
                 Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }

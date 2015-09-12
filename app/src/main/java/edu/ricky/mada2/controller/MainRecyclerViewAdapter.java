@@ -3,30 +3,35 @@ package edu.ricky.mada2.controller;
 /**
  * Created by Ricky Wu on 2015/9/7.
  */
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.List;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import edu.ricky.mada2.MainActivity;
+import java.util.List;
+import java.util.Map;
+
 import edu.ricky.mada2.R;
+import edu.ricky.mada2.model.DbModel;
 import edu.ricky.mada2.model.Movie;
 import edu.ricky.mada2.model.MovieModel;
 
 public class MainRecyclerViewAdapter extends RecyclerView
         .Adapter<MainRecyclerViewAdapter
         .DataObjectHolder> {
+    // Models
     private MovieModel mModel;
-    // Reference Controller
-    private MainActivity mActivity;
+    private DbModel db;
+    // Reference
+    private Context context;
     private List<Movie> mDataset;
     private MyClickListener myClickListener;
 
@@ -39,7 +44,6 @@ public class MainRecyclerViewAdapter extends RecyclerView
         TextView genre;
         TextView plot;
         TextView rating;
-        RelativeLayout mContainer;
 
         public DataObjectHolder(View itemView) {
             super(itemView);
@@ -49,7 +53,6 @@ public class MainRecyclerViewAdapter extends RecyclerView
             year = (TextView) itemView.findViewById(R.id.movie_year_textview);
             plot = (TextView) itemView.findViewById(R.id.movie_plot_textview);
             rating = (TextView) itemView.findViewById(R.id.movie_rating_textview);
-            //mContainer = (RelativeLayout) itemView.findViewById(R.id.card_view_container);
 
             itemView.setOnClickListener(this);
         }
@@ -64,10 +67,11 @@ public class MainRecyclerViewAdapter extends RecyclerView
         this.myClickListener = myClickListener;
     }
 
-    public MainRecyclerViewAdapter(MainActivity activity) {
-        mModel = MovieModel.getSingleton();
-        mDataset = mModel.getAllMovies();
-        mActivity = activity;
+    public MainRecyclerViewAdapter(Context context) {
+        this.mModel = MovieModel.getSingleton();
+        this.db = DbModel.getSingleton(context);
+        this.context = context;
+        load();
     }
 
     @Override
@@ -83,43 +87,15 @@ public class MainRecyclerViewAdapter extends RecyclerView
     @Override
     public void onBindViewHolder(final DataObjectHolder holder, int position) {
         holder.title.setText(mDataset.get(position).getTitle());
-        //holder.year.setText(mDataset.get(position).getYear());
         holder.genre.setText(mDataset.get(position).getGenre());
         holder.year.setText(mDataset.get(position).getYear());
         holder.plot.setText(mDataset.get(position).getPlot());
         holder.rating.setText(Double.toString(mDataset.get(position).getMyRating()));
-        Picasso.with(mActivity)
+        Picasso.with(context)
                 .load(mDataset.get(position).getIconUrl())
-                .into(holder.poster/*(), PicassoPalette.with(mDataset.get(position).getIconUrl(), holder.poster)
-                                .use(PicassoPalette.Profile.VIBRANT_LIGHT)
-                                .intoBackground(holder.mContainer)
-                                .intoTextColor(holder.title)*/
-//
-//                                .use(PicassoPalette.Profile.VIBRANT)
-//                                .intoBackground(titleView, PicassoPalette.Swatch.RGB)
-//                                .intoTextColor(titleView, PicassoPalette.Swatch.BODY_TEXT_COLOR)
+                .into(holder.poster
                 );
-        //Bitmap bitmap = ((BitmapDrawable)holder.poster.getDrawable()).getBitmap();
-        //.transform(new RoundedTransformation(10, 0))
-                //.fit()
-                //.into(holder.poster);
 
-        /*Palette.generateAsync(bitmap,
-                new Palette.PaletteAsyncListener() {
-                    @Override
-                    public void onGenerated(Palette palette) {
-                        Palette.Swatch vibrant =
-                                palette.getVibrantSwatch();
-                        if (vibrant != null) {
-                            // If we have a vibrant color
-                            // update the title TextView
-                            holder.mContainer.setBackgroundColor(
-                                    vibrant.getRgb());
-//                            titleView.setTextColor(
-//                                    vibrant.getTitleTextColor());
-                        }
-                    }
-                });*/
     }
 
     public void addItem(Movie dataObj, int index) {
@@ -148,7 +124,30 @@ public class MainRecyclerViewAdapter extends RecyclerView
         void onItemClick(List<Movie> dataset,int position, View v);
     }
 
+    private void save() {
+        //TODO: Save Movies in the Map into Sqlite
+        db.saveAllMovies(mModel.getMovieMap());
+        return;
+    }
+
+    private void load() {
+        //TODO: Load movies from Sqlite to Map
+        Map<String, String> map = db.getAllMovies();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            try {
+                JSONObject jo = new JSONObject(entry.getValue());
+                Movie m = new Movie(jo);
+                mModel.addMovie(m);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return;
+    }
+
     public void close() {
+        save();
         mModel.close();
+        db.close();
     }
 }

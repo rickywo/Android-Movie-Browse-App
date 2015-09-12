@@ -23,18 +23,11 @@
         android:layout_below="@+id/toolbar_container">
 
         <!-- Content -->
-        <LinearLayout
+        <FrameLayout
+            android:id="@+id/fragment_placeholder"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/movie_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:scrollbars="vertical"
-                android:clipToPadding="false"/>
-        </LinearLayout>
+            android:layout_height="match_parent">
+        </FrameLayout>
 
         <!-- Side Drawer -->
         <LinearLayout
