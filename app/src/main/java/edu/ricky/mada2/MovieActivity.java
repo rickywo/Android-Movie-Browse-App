@@ -1,5 +1,6 @@
 package edu.ricky.mada2;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
@@ -9,9 +10,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import at.markushi.ui.CircleButton;
 import edu.ricky.mada2.R;
+import edu.ricky.mada2.controller.EventActivity;
 import edu.ricky.mada2.controller.MovieDetailController;
 
 import static android.widget.Button.*;
@@ -19,6 +22,7 @@ import static android.widget.Button.*;
 public class MovieActivity extends AppCompatActivity {
     Toolbar mToolbar;
     CircleButton mSaveMovieButton;
+    CircleButton mAddEventButton;
     MovieDetailController mController;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +31,11 @@ public class MovieActivity extends AppCompatActivity {
         // Ensure toolbar is assigned to current activity
         mToolbar = (Toolbar) findViewById(R.id.toolbar_movie);
         mSaveMovieButton = (CircleButton) findViewById(R.id.save_movie_button);
+        mAddEventButton = (CircleButton) findViewById(R.id.add_event_button);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         mSaveMovieButton.setOnClickListener(saveButtonOnclickListener);
+        mAddEventButton.setOnClickListener(addEventOnclickListener);
         // Get Intent Bundle of Movie ID
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -71,6 +77,13 @@ public class MovieActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             mController.saveMovie();
+        }
+    };
+
+    private OnClickListener addEventOnclickListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            mController.addEvent();
         }
     };
 }

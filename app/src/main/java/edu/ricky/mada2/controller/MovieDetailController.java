@@ -1,5 +1,6 @@
 package edu.ricky.mada2.controller;
 
+import android.content.Intent;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -132,5 +133,11 @@ public class MovieDetailController {
         }
         saveState = false;
         return result;
+    }
+
+    public void addEvent() {
+        Intent intent = new Intent(mActivity.getBaseContext(), EventActivity.class);
+        intent.putExtra("id", tempMovie.getImdbId());
+        mActivity.startActivity(intent);
     }
 }
