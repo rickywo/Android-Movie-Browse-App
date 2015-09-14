@@ -138,8 +138,8 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Create A New Event"
-                android:id="@+id/button2" />
+                android:text="Save Event"
+                android:id="@+id/save_event_button" />
         </LinearLayout>
     </LinearLayout>
 

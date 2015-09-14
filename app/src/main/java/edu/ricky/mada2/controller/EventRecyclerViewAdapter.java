@@ -13,46 +13,41 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.List;
-import java.util.Map;
 
 import edu.ricky.mada2.R;
 import edu.ricky.mada2.model.DbModel;
-import edu.ricky.mada2.model.Movie;
-import edu.ricky.mada2.model.MovieModel;
+import edu.ricky.mada2.model.Event;
+import edu.ricky.mada2.model.EventModel;
 
-public class MainRecyclerViewAdapter extends RecyclerView
-        .Adapter<MainRecyclerViewAdapter
+public class EventRecyclerViewAdapter extends RecyclerView
+        .Adapter<EventRecyclerViewAdapter
         .DataObjectHolder> {
     // Models
-    private MovieModel mModel;
+    private EventModel eModel;
     private DbModel db;
     // Reference
     private Context context;
-    private List<Movie> mDataset;
+    private List<Event> mDataset;
     private MyClickListener myClickListener;
 
     public class DataObjectHolder extends RecyclerView.ViewHolder
             implements View
             .OnClickListener {
-        ImageView poster;
-        TextView title;
-        TextView year;
-        TextView genre;
-        TextView plot;
-        TextView rating;
+        //ImageView poster;
+        TextView name;
+        TextView date;
+        TextView venue;
+        TextView loc;
 
         public DataObjectHolder(View itemView) {
             super(itemView);
-            poster = (ImageView) itemView.findViewById(R.id.movie_thumbnail_imageview);
-            title = (TextView) itemView.findViewById(R.id.movie_title_textview);
-            genre = (TextView) itemView.findViewById(R.id.movie_genre_textview);
-            year = (TextView) itemView.findViewById(R.id.movie_year_textview);
-            plot = (TextView) itemView.findViewById(R.id.movie_plot_textview);
-            rating = (TextView) itemView.findViewById(R.id.movie_rating_textview);
+            //poster = (ImageView) itemView.findViewById(R.id.movie_thumbnail_imageview);
+            name = (TextView) itemView.findViewById(R.id.event_name_textview);
+            date = (TextView) itemView.findViewById(R.id.event_date_textview);
+            venue = (TextView) itemView.findViewById(R.id.event_venue_textview);
+            loc = (TextView) itemView.findViewById(R.id.event_loc_textview);
 
             itemView.setOnClickListener(this);
         }
@@ -67,8 +62,8 @@ public class MainRecyclerViewAdapter extends RecyclerView
         this.myClickListener = myClickListener;
     }
 
-    public MainRecyclerViewAdapter(Context context) {
-        this.mModel = MovieModel.getSingleton();
+    public EventRecyclerViewAdapter(Context context) {
+        this.eModel = EventModel.getSingleton();
         this.db = DbModel.getSingleton(context);
         this.context = context;
         load();
@@ -79,7 +74,7 @@ public class MainRecyclerViewAdapter extends RecyclerView
     public DataObjectHolder onCreateViewHolder(ViewGroup parent,
                                                int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.movie_card, parent, false);
+                .inflate(R.layout.event_card, parent, false);
 
         DataObjectHolder dataObjectHolder = new DataObjectHolder(view);
         return dataObjectHolder;
@@ -87,32 +82,32 @@ public class MainRecyclerViewAdapter extends RecyclerView
 
     @Override
     public void onBindViewHolder(final DataObjectHolder holder, int position) {
-        holder.title.setText(mDataset.get(position).getTitle());
-        holder.genre.setText(mDataset.get(position).getGenre());
-        holder.year.setText(mDataset.get(position).getYear());
-        holder.plot.setText(mDataset.get(position).getPlot());
-        holder.rating.setText(Double.toString(mDataset.get(position).getMyRating()));
+        holder.name.setText(mDataset.get(position).getName());
+        holder.date.setText(mDataset.get(position).getEventDate().toString());
+        holder.venue.setText(mDataset.get(position).getVenue());
+        holder.loc.setText(mDataset.get(position).getLocation().toString());
+        /*holder.rating.setText(Double.toString(mDataset.get(position).getMyRating()));
         Picasso.with(context)
                 .load(mDataset.get(position).getIconUrl())
                 .into(holder.poster
-                );
+                );*/
 
     }
 
-    public void addItem(Movie dataObj, int index) {
-        mModel.addMovie(dataObj);
+    public void addItem(Event dataObj, int index) {
+        eModel.addEvent(dataObj);
         mDataset.add(index, dataObj);
         notifyItemInserted(index);
     }
 
     public void deleteItem(int index) {
-        mModel.removeMovie(mDataset.get(index));
+        eModel.removeEvent(mDataset.get(index));
         mDataset.remove(index);
         notifyItemRemoved(index);
     }
 
     public void reloadDataset() {
-        mDataset = mModel.getAllMovies();
+        mDataset = eModel.getAllEvent();
         notifyDataSetChanged();
     }
 
@@ -122,33 +117,33 @@ public class MainRecyclerViewAdapter extends RecyclerView
     }
 
     public interface MyClickListener {
-        void onItemClick(List<Movie> dataset,int position, View v);
+        void onItemClick(List<Event> dataset, int position, View v);
     }
 
     private void save() {
-        //TODO: Save Movies in the Map into Sqlite
+        /*//TODO: Save Movies in the Map into Sqlite
         db.saveAllMovies(mModel.getMovieMap());
-        return;
+        return;*/
     }
 
     private void load() {
-        //TODO: Load movies from Sqlite to Map
+        /*//TODO: Load movies from Sqlite to Map
         Map<String, String> map = db.getAllMovies();
         for (Map.Entry<String, String> entry : map.entrySet()) {
             try {
                 JSONObject jo = new JSONObject(entry.getValue());
                 Movie m = new Movie(jo);
-                mModel.addMovie(m);
+                eModel.addEvent(m);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        return;
+        return;*/
     }
 
     public void close() {
         save();
-        mModel.close();
+        eModel.close();
         db.close();
     }
 }

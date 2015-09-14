@@ -1,6 +1,8 @@
 package edu.ricky.mada2.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -34,20 +36,35 @@ public class EventModel {
      * 3. Add event into Movie object's event list
      * 4. put new event into eventMap
      */
-    public void addEvent(String name, Movie movie) {
+    public String addEvent(String name, String date, String venue, String loc, String movieID, List<Invitee> invitees) {
         String id;
         Event event;
         do{
-            id = createID(movie);
+            id = createID(movieID);
         } while(contains(id));
-        event = new Event(name, movie);
-        movie.addEvent(event);
+        event = new Event(id, movieID);
+        event.setName(name);
+        event.setVenue(venue);
+        event.setLocation(event.new Location(loc));
+        event.setMovie(movieID);
+        event.setInvitees((ArrayList<Invitee>) invitees);
+
         eventMap.put(event.getID(), event);
+        return event.getID();
+    }
+
+    public String addEvent(Event event) {
+        eventMap.put(event.getID(), event);
+        return event.getID();
     }
 
     public Event getEventById(String id)
     {
         return eventMap.get(id);
+    }
+
+    public ArrayList<Event> getAllEvent() {
+        return new ArrayList<>(eventMap.values());
     }
 
     public boolean removeEvent(Event event) {
@@ -59,8 +76,6 @@ public class EventModel {
         if(!eventMap.containsKey(id)) {
             result = false;
         } else {
-            Movie m = event.getMovie();
-            m.removeEvent(id);
             eventMap.remove(event.getID());
         }
         return result;
@@ -84,10 +99,13 @@ public class EventModel {
     }
 
     // Create EventID with random 3 digits append to MovieID
-    private String createID(Movie m)
+    private String createID(String mID)
     {
         Random random = new Random();
         int randomInt = 1+ random.nextInt(999);
-        return String.format("%s-%03d", m.getTitle(), randomInt);
+        return String.format("%s-%03d", mID, randomInt);
+    }
+
+    public void close() {
     }
 }

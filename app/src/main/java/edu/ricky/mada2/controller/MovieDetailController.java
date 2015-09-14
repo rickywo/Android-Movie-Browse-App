@@ -137,7 +137,7 @@ public class MovieDetailController {
 
     public void addEvent() {
         Intent intent = new Intent(mActivity.getBaseContext(), EventActivity.class);
-        intent.putExtra("id", tempMovie.getImdbId());
+        intent.putExtra("movieID", tempMovie.getImdbId());
         mActivity.startActivity(intent);
     }
 }

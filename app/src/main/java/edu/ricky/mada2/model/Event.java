@@ -1,27 +1,52 @@
 package edu.ricky.mada2.model;
 
-import android.location.Location;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Ricky Wu on 2015/8/26.
  */
+
+
 public class Event implements Serializable {
 
     private String eventID, eventName, eventVenue;
     private Location eventLoc;
     private Date eventDate;
-    private Movie eventMovie;
-    private ArrayList<Invitee> invitees;
+    private String movieID;
+    private Map<String ,Invitee> invitees;
 
-    public Event(String name , Movie movie) {
-        this.eventID =
-        this.eventName  = name;
+    public class Location {
+
+        double latitude;
+        double longitude;
+        Location(String loc) {
+            String[] latlong =  loc.split(",");
+            this.latitude = Double.parseDouble(latlong[0]);
+            this.longitude = Double.parseDouble(latlong[1]);
+        }
+        Location(double lat, double lon) {
+            this.latitude = lat;
+            this.longitude = lon;
+        }
+
+        @Override
+        public String toString() {
+            String latlong = String.valueOf(latitude) + "," + String.valueOf(longitude);
+            return latlong;
+        }
+    }
+
+    public Event(String id , String movieID) {
+        setID(id);
+        setMovie(movieID);
+        this.eventName  = null;
         this.eventLoc   = null;
         this.eventDate  = new Date();
-        this.invitees   = new ArrayList<>();
+        this.invitees   = new HashMap<>();
     }
 
     public String getID() {
@@ -56,33 +81,57 @@ public class Event implements Serializable {
         this.eventDate = d;
     }
 
-    public Movie getMovie() {
-        return this.eventMovie;
+    public String getMovie() {
+        return this.movieID;
     }
 
-    public void setMovie(Movie m) {
-        this.eventMovie = m;
+    public void setMovie(String movieID) {
+        this.movieID = movieID;
     }
 
     public Location getLocation() {
         return this.eventLoc;
     }
 
-    public void setLocation(Location location) {
-        this.eventLoc = location;
+    public void setLocation(Location loc) {
+        this.eventLoc = loc;
     }
 
     public ArrayList<Invitee> getInvitees() {
-        return invitees;
+        return new ArrayList<>(invitees.values());
     }
 
     public void setInvitees(ArrayList<Invitee> invitees) {
-        this.invitees = invitees;
+        for(Invitee inv: invitees) {
+            this.invitees.put(inv.getName(), inv);
+        }
     }
 
-    public void addInvitee(Invitee invitee) {
-        this.invitees.add(invitee);
+    public boolean removeInviteeByName(String name) {
+        if(this.invitees.containsKey(name)) {
+            this.invitees.remove(name);
+            return true;
+        } else {
+            return false;
+        }
     }
 
+    public boolean addInvitee(Invitee inv) {
+        if(this.invitees.containsKey(inv.getName())) {
+            return false;
+        } else {
+            this.invitees.put(inv.getName(), inv);
+            return true;
+        }
+    }
 
+    public boolean updateInvitee(Invitee inv) {
+        if(this.invitees.containsKey(inv.getName())) {
+            this.invitees.remove(inv.getName());
+            this.invitees.put(inv.getName(), inv);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

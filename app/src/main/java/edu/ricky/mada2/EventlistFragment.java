@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,20 +14,21 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import edu.ricky.mada2.controller.EventRecyclerViewAdapter;
 import edu.ricky.mada2.controller.MainRecyclerViewAdapter;
+import edu.ricky.mada2.model.Event;
 import edu.ricky.mada2.model.Movie;
-import android.support.v4.app.Fragment;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link MovielistFragment.OnFragmentInteractionListener} interface
+ * {@link EventlistFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link MovielistFragment#newInstance} factory method to
+ * Use the {@link EventlistFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MovielistFragment extends Fragment {
+public class EventlistFragment extends Fragment {
 
     // TODO: Rename and change types of parameters
     private RecyclerView mRecyclerView;
@@ -42,15 +44,15 @@ public class MovielistFragment extends Fragment {
      * @return A new instance of fragment MovielistFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MovielistFragment newInstance() {
-        MovielistFragment fragment = new MovielistFragment();
+    public static EventlistFragment newInstance() {
+        EventlistFragment fragment = new EventlistFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
 
         return fragment;
     }
 
-    public MovielistFragment() {
+    public EventlistFragment() {
         // Required empty public constructor
     }
 
@@ -64,7 +66,7 @@ public class MovielistFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View view = inflater.inflate(R.layout.fragment_movielist, container, false);
+        final View view = inflater.inflate(R.layout.fragment_eventlist, container, false);
         initRecyclerView(view);
         return view;
     }
@@ -94,22 +96,22 @@ public class MovielistFragment extends Fragment {
     }
 
     private void initRecyclerView(View view) {
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.movie_recycler_view);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.event_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new MainRecyclerViewAdapter(getActivity().getApplicationContext());
+        mAdapter = new EventRecyclerViewAdapter(getActivity().getApplicationContext());
         mRecyclerView.setAdapter(mAdapter);
-        ((MainRecyclerViewAdapter) mAdapter).setOnItemClickListener(rvItemClickListener);
+        ((EventRecyclerViewAdapter) mAdapter).setOnItemClickListener(rvItemClickListener);
     }
 
-    private MainRecyclerViewAdapter.MyClickListener rvItemClickListener = new MainRecyclerViewAdapter.MyClickListener() {
+    private EventRecyclerViewAdapter.MyClickListener rvItemClickListener = new EventRecyclerViewAdapter.MyClickListener() {
         @Override
-        public void onItemClick(List<Movie> dataset, int position, View v) {
+        public void onItemClick(List<Event> dataset, int position, View v) {
             Intent intent = new Intent(getActivity().getBaseContext(), MovieActivity.class);
-            Toast.makeText(getActivity().getApplicationContext(), (String) dataset.get(position).getTitle(),
+            Toast.makeText(getActivity().getApplicationContext(), (String) dataset.get(position).getName(),
                     Toast.LENGTH_SHORT).show();
-            intent.putExtra("id", dataset.get(position).getImdbId());
+            intent.putExtra("id", dataset.get(position).getID());
 
             startActivity(intent);
         }
@@ -131,11 +133,11 @@ public class MovielistFragment extends Fragment {
     }
 
     public void reloadDataset() {
-        ((MainRecyclerViewAdapter) mAdapter).reloadDataset();
+        ((EventRecyclerViewAdapter) mAdapter).reloadDataset();
     }
 
     public void releaseResource() {
-        ((MainRecyclerViewAdapter) mAdapter).close();
+        ((EventRecyclerViewAdapter) mAdapter).close();
     }
 
 }

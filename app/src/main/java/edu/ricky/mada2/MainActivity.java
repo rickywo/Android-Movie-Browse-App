@@ -11,37 +11,35 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import edu.ricky.mada2.utility.*;
 
-import java.util.List;
-
-import butterknife.*;
-import edu.ricky.mada2.controller.MainRecyclerViewAdapter;
-import edu.ricky.mada2.model.DbModel;
-import edu.ricky.mada2.model.Movie;
-
-
-public class MainActivity extends AppCompatActivity implements MovielistFragment.OnFragmentInteractionListener{
-
+public class MainActivity extends AppCompatActivity implements
+        MovielistFragment.OnFragmentInteractionListener,
+        EventlistFragment.OnFragmentInteractionListener {
+    public static final int MOVIE_FRAGMENT = 0;
+    public static final int EVENT_FRAGMENT = 1;
     private Toolbar mToolbar;
-
     private MenuItem mSearchAction;
     private boolean isSearchOpened = false;
+    private boolean showSearch = true;
     private EditText edtSeach;
-
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
-    private MovielistFragment mListFragment;
+    // Check for internet connection
+    private NetworkStateManager netWorkStateManager;
+    private MovielistFragment mListFragment = new MovielistFragment();
+    private EventlistFragment eListFragment = new EventlistFragment();
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,24 +47,31 @@ public class MainActivity extends AppCompatActivity implements MovielistFragment
         // Initial DbModel with application context
         // DbModel.getSingleton(this.getApplicationContext());
         setContentView(R.layout.activity_main);
+        netWorkStateManager = ((MovieGangApp)this.getApplication()).getStateManager();
         initToolbar();
         initDrawer();
         NavigationView navigationView = (NavigationView) findViewById(R.id.vNavigation);
         if (navigationView != null) {
             setupNavigationDrawerContent(navigationView);
         }
-        mListFragment = new MovielistFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_placeholder, mListFragment);
-        ft.commit();
+        mListFragment =  MovielistFragment.newInstance();
+        eListFragment = EventlistFragment.newInstance();
+        handleBundleExtras();
         setupNavigationDrawerContent(navigationView);
-        //
+        Log.e("MAD", "onCreate");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mListFragment.reloadDataset();
+        Log.e("MAD", "onResume");
+        try {
+            mListFragment.reloadDataset();
+            eListFragment.reloadDataset();
+        } catch (Exception e){
+
+        }
     }
 
 
@@ -79,7 +84,9 @@ public class MainActivity extends AppCompatActivity implements MovielistFragment
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        Log.e("MAD", "onPrepareOptionsMenu");
         mSearchAction = menu.findItem(R.id.action_search);
+        mSearchAction.setVisible(showSearch);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -159,7 +166,13 @@ public class MainActivity extends AppCompatActivity implements MovielistFragment
 
     @Override
     protected void onStop() {
-        mListFragment.releaseResource();
+        Log.e("MAD", "onStop");
+        try {
+            mListFragment.releaseResource();
+            eListFragment.releaseResource();
+        } catch (Exception e) {
+
+        }
         super.onStop();
     }
 
@@ -185,21 +198,25 @@ public class MainActivity extends AppCompatActivity implements MovielistFragment
     }
 
 
-
     private void setupNavigationDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
+
                         switch (menuItem.getItemId()) {
                             case R.id.menu_my_movies:
                                 menuItem.setChecked(true);
                                 show(menuItem.getTitle().toString());
+                                switchFragment(0);
+                                mSearchAction.setVisible(showSearch);
                                 mDrawerLayout.closeDrawer(GravityCompat.START);
                                 return true;
                             case R.id.menu_my_events:
-                                menuItem.setChecked(true);
+                                menuItem.setChecked(showSearch);
                                 show(menuItem.getTitle().toString());
+                                switchFragment(1);
+                                mSearchAction.setVisible(false);
                                 mDrawerLayout.closeDrawer(GravityCompat.START);
                                 return true;
                             case R.id.menu_invitations:
@@ -236,5 +253,34 @@ public class MainActivity extends AppCompatActivity implements MovielistFragment
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    private void handleBundleExtras() {
+        int frag_index = 0;
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            // After add/or update an event
+            frag_index = extras.getInt("frag_index");
+            showSearch = false;
+        } else {
+            showSearch = true;
+        }
+        switchFragment(frag_index);
+    }
+
+    private void switchFragment(int fragment_index) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        switch(fragment_index) {
+            case 0:
+                ft.replace(R.id.fragment_placeholder, mListFragment);
+                break;
+            case 1:
+                ft.replace(R.id.fragment_placeholder, eListFragment);
+                break;
+            default:
+                break;
+        }
+        ft.addToBackStack(null);
+        ft.commit();
     }
 }
