@@ -20,6 +20,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
+
+import edu.ricky.mada2.model.User;
 import edu.ricky.mada2.utility.*;
 
 public class MainActivity extends AppCompatActivity implements
@@ -27,16 +31,21 @@ public class MainActivity extends AppCompatActivity implements
         EventlistFragment.OnFragmentInteractionListener {
     public static final int MOVIE_FRAGMENT = 0;
     public static final int EVENT_FRAGMENT = 1;
+    // Indicates the state of search component is currently enabled/disabled
+    private boolean isSearchOpened = false;
+    // Flag of show/hide search component
+    private boolean showSearch = true;
     private Toolbar mToolbar;
     private MenuItem mSearchAction;
-    private boolean isSearchOpened = false;
-    private boolean showSearch = true;
     private EditText edtSeach;
+    private TextView mEmailTextView;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     // Check for internet connection
     private NetworkStateManager netWorkStateManager;
+    // Movie List Fragment
     private MovielistFragment mListFragment = new MovielistFragment();
+    // Event List Fragment
     private EventlistFragment eListFragment = new EventlistFragment();
 
 
@@ -62,9 +71,11 @@ public class MainActivity extends AppCompatActivity implements
         Log.e("MAD", "onCreate");
     }
 
+    // Reload dataset from models and redraw the list
     @Override
     protected void onResume() {
         super.onResume();
+        updateUserInfo();
         Log.e("MAD", "onResume");
         try {
             mListFragment.reloadDataset();
@@ -84,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        Log.e("MAD", "onPrepareOptionsMenu");
         mSearchAction = menu.findItem(R.id.action_search);
         mSearchAction.setVisible(showSearch);
         return super.onPrepareOptionsMenu(menu);
@@ -104,7 +114,9 @@ public class MainActivity extends AppCompatActivity implements
 
         return super.onOptionsItemSelected(item);
     }
-
+    /**
+     * Handle searching movie behaviour
+     */
     protected void handleMenuSearch() {
         ActionBar action = getSupportActionBar(); //get the actionbar
 
@@ -164,9 +176,13 @@ public class MainActivity extends AppCompatActivity implements
         super.onBackPressed();
     }
 
+    /**
+     * Override onStop method.
+     * release DB resources and save data (Movies and Events)
+     * to sqlite db permanently.
+     */
     @Override
     protected void onStop() {
-        Log.e("MAD", "onStop");
         try {
             mListFragment.releaseResource();
             eListFragment.releaseResource();
@@ -176,6 +192,12 @@ public class MainActivity extends AppCompatActivity implements
         super.onStop();
     }
 
+    /**
+     * doSearch
+     * param movieTitle: movie name string
+     * TODO: send input string from searching bar to MovieActivity
+     */
+
     private void doSearch(String movieTitle) {
         Intent intent = new Intent(getBaseContext(), MovieActivity.class);
         Toast.makeText(getApplicationContext(), movieTitle,
@@ -183,21 +205,35 @@ public class MainActivity extends AppCompatActivity implements
         intent.putExtra("title", movieTitle);
         startActivity(intent);
     }
-
+    /**
+     * Initial drawer layout
+    */
     private void initDrawer() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_open, R.string.drawer_close);
         mDrawerToggle.syncState();
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mEmailTextView = (TextView) findViewById(R.id.email);
     }
 
+    /**
+     * Initial toolbar layout
+     */
     private void initToolbar() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
-
+    /**
+     * Setup listener for drawer menu
+     * R.id.menu_my_movie: goto MovielistFragment
+     * R.id.menu_my_event: goto EventlistFragment
+     * R.id.menu_invitation:
+     * R.id.menu_notifications
+     * R.id.menu_login: goto LoginActivity
+     * R.id.menu_logout: logout user
+     */
     private void setupNavigationDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -205,6 +241,7 @@ public class MainActivity extends AppCompatActivity implements
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
 
                         switch (menuItem.getItemId()) {
+                            //
                             case R.id.menu_my_movies:
                                 menuItem.setChecked(true);
                                 show(menuItem.getTitle().toString());
@@ -234,11 +271,13 @@ public class MainActivity extends AppCompatActivity implements
                             case R.id.menu_login:
                                 menuItem.setChecked(true);
                                 show(menuItem.getTitle().toString());
+                                openLoginActivity();
                                 mDrawerLayout.closeDrawer(GravityCompat.START);
                                 return true;
                             case R.id.menu_logout:
                                 menuItem.setChecked(true);
                                 show(menuItem.getTitle().toString());
+                                logout();
                                 mDrawerLayout.closeDrawer(GravityCompat.START);
                                 return true;
                         }
@@ -284,5 +323,23 @@ public class MainActivity extends AppCompatActivity implements
         }
         ft.addToBackStack(null);
         ft.commit();
+    }
+
+    private void openLoginActivity() {
+        Intent intent = new Intent(this.getBaseContext(), LoginActivity.class);
+        this.startActivity(intent);
+    }
+
+    private void updateUserInfo() {
+        if(((MovieGangApp) getApplication()).isLoginState()) {
+            mEmailTextView.setText(((MovieGangApp) getApplication()).getCurrentUser().username);
+        } else {
+            mEmailTextView.setText(R.string.anonymous);
+        }
+    }
+
+    private void logout() {
+        ((MovieGangApp) getApplication()).logout();
+        updateUserInfo();
     }
 }
