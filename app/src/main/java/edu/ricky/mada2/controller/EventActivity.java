@@ -17,17 +17,17 @@ import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 import edu.ricky.mada2.MainActivity;
 import edu.ricky.mada2.MapsActivity;
-import edu.ricky.mada2.MovieActivity;
 import edu.ricky.mada2.R;
 import edu.ricky.mada2.model.Event;
 import edu.ricky.mada2.model.EventModel;
@@ -36,6 +36,7 @@ import edu.ricky.mada2.model.Movie;
 import edu.ricky.mada2.model.MovieModel;
 
 public class EventActivity extends ActionBarActivity {
+    final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm");
     private ImageView mPoster;
     private TextView mTitle;
     private Button mSaveButton;
@@ -101,16 +102,8 @@ public class EventActivity extends ActionBarActivity {
         eModel = EventModel.getSingleton();
         getViews();
         setListeners();
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            String mID = extras.getString("movieID");
-            String eID = extras.getString("eventID");
-            if(mID != null)
-                movie = mModel.getMovieById(mID);
-            else if (eID != null)
-                event = eModel.getEventById(eID);
-            mTitle.setText(String.format("%s (%s)", movie.getTitle(), movie.getYear()));
-        }
+        handleBundleExtras();
+        parseDataToViews();
     }
 
     @Override
@@ -177,6 +170,16 @@ public class EventActivity extends ActionBarActivity {
         mSaveButton = (Button) findViewById(R.id.save_event_button);
     }
 
+    private void parseDataToViews() {
+        if(event!=null) {
+            mName.setText(event.getName());
+            mDatetime.setText(sdf.format(event.getEventDate()));
+            mVenue.setText(event.getVenue());
+            mLoc.setText(event.getLocation().toString());
+        }
+        mTitle.setText(String.format("%s (%s)", movie.getTitle(), movie.getYear()));
+    }
+
     private void setListeners() {
         enableSaveButton();
         mSaveButton.setOnClickListener(saveButtonOnClickListener);
@@ -217,7 +220,7 @@ public class EventActivity extends ActionBarActivity {
     }
 
     private void enableSaveButton() {
-        mSaveButton.setVisibility(validateEditFields()?View.VISIBLE:View.INVISIBLE);
+        mSaveButton.setVisibility(validateEditFields() ? View.VISIBLE : View.INVISIBLE);
     }
 
     private boolean validateEditFields() {
@@ -235,12 +238,27 @@ public class EventActivity extends ActionBarActivity {
     }
 
     public void saveEvent() {
+
+
         ArrayList<Invitee> ai = new ArrayList<>();
         String name = mName.getText().toString();
-        String date = mDatetime.getText().toString();
+        String dates = mDatetime.getText().toString();
         String venue = mVenue.getText().toString();
         String loc = mLoc.getText().toString();
-        String id = eModel.addEvent(name, date, venue, "-36.4266534,145.23292019999997", movie.getImdbId(), ai);
+        Date date = null;
+        try {
+            date = sdf.parse(dates);
+            Log.e("MAD", "ParseDate correctly");
+        } catch (ParseException e) {
+            Log.e("MAD", "ParseDate failed");
+        }
+        // Handle updating an event
+        if(event != null) {
+            eModel.updateEvent(event, name, date, venue, "-36.4266534,145.23292019999997", movie.getImdbId(), ai);
+        } else {
+            // Handle adding a new event
+            String id = eModel.addEvent(name, date, venue, "-36.4266534,145.23292019999997", movie.getImdbId(), ai);
+        }
         backToMainActivity();
     }
 
@@ -248,5 +266,21 @@ public class EventActivity extends ActionBarActivity {
         Intent intent = new Intent(getBaseContext(), MainActivity.class);
         intent.putExtra("frag_index", MainActivity.EVENT_FRAGMENT);
         startActivity(intent);
+    }
+
+    private void handleBundleExtras() {
+        event = null;
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            String mID = extras.getString("movieID");
+            String eID = extras.getString("eventID");
+            if(mID != null)
+                movie = mModel.getMovieById(mID);
+            else if (eID != null) {
+                event = eModel.getEventById(eID);
+                movie = mModel.getMovieById(event.getMovieID());
+            }
+
+        }
     }
 }

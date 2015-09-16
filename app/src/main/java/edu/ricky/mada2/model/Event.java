@@ -81,7 +81,7 @@ public class Event implements Serializable {
         this.eventDate = d;
     }
 
-    public String getMovie() {
+    public String getMovieID() {
         return this.movieID;
     }
 

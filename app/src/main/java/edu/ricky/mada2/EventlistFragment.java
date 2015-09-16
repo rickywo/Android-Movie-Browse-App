@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import edu.ricky.mada2.controller.EventActivity;
 import edu.ricky.mada2.controller.EventRecyclerViewAdapter;
 import edu.ricky.mada2.controller.MainRecyclerViewAdapter;
 import edu.ricky.mada2.model.Event;
@@ -108,11 +109,10 @@ public class EventlistFragment extends Fragment {
     private EventRecyclerViewAdapter.MyClickListener rvItemClickListener = new EventRecyclerViewAdapter.MyClickListener() {
         @Override
         public void onItemClick(List<Event> dataset, int position, View v) {
-            Intent intent = new Intent(getActivity().getBaseContext(), MovieActivity.class);
+            Intent intent = new Intent(getActivity().getBaseContext(), EventActivity.class);
             Toast.makeText(getActivity().getApplicationContext(), (String) dataset.get(position).getName(),
                     Toast.LENGTH_SHORT).show();
-            intent.putExtra("id", dataset.get(position).getID());
-
+            intent.putExtra("eventID", dataset.get(position).getID());
             startActivity(intent);
         }
     };

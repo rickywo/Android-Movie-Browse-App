@@ -1,6 +1,7 @@
 package edu.ricky.mada2.model;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class EventModel {
      * 3. Add event into Movie object's event list
      * 4. put new event into eventMap
      */
-    public String addEvent(String name, String date, String venue, String loc, String movieID, List<Invitee> invitees) {
+    public String addEvent(String name, Date date, String venue, String loc, String movieID, List<Invitee> invitees) {
         String id;
         Event event;
         do{
@@ -45,6 +46,7 @@ public class EventModel {
         event = new Event(id, movieID);
         event.setName(name);
         event.setVenue(venue);
+        event.setEventDate(date);
         event.setLocation(event.new Location(loc));
         event.setMovie(movieID);
         event.setInvitees((ArrayList<Invitee>) invitees);
@@ -98,6 +100,25 @@ public class EventModel {
         return result;
     }
 
+    public boolean updateEvent(Event event, String name, Date date, String venue, String loc, String movieID, List<Invitee> invitees) {
+        boolean result = true;
+        String id = event.getID();
+        if(!eventMap.containsKey(id)) {
+            result = false;
+        } else {
+            eventMap.remove(id);
+            // Update Map with new instance
+            event.setName(name);
+            event.setVenue(venue);
+            event.setEventDate(date);
+            event.setLocation(event.new Location(loc));
+            event.setMovie(movieID);
+            event.setInvitees((ArrayList<Invitee>) invitees);
+            eventMap.put(id, event);
+        }
+        return result;
+    }
+
     // Create EventID with random 3 digits append to MovieID
     private String createID(String mID)
     {
@@ -107,5 +128,7 @@ public class EventModel {
     }
 
     public void close() {
+
     }
+
 }

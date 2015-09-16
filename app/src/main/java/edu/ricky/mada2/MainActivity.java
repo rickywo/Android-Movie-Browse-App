@@ -209,13 +209,15 @@ public class MainActivity extends AppCompatActivity implements
                                 menuItem.setChecked(true);
                                 show(menuItem.getTitle().toString());
                                 switchFragment(0);
-                                mSearchAction.setVisible(showSearch);
+                                // Show search bar
+                                mSearchAction.setVisible(true);
                                 mDrawerLayout.closeDrawer(GravityCompat.START);
                                 return true;
                             case R.id.menu_my_events:
                                 menuItem.setChecked(showSearch);
                                 show(menuItem.getTitle().toString());
                                 switchFragment(1);
+                                // Hide search bar
                                 mSearchAction.setVisible(false);
                                 mDrawerLayout.closeDrawer(GravityCompat.START);
                                 return true;
