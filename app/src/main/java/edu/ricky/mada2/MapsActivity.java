@@ -25,7 +25,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.vision.barcode.Barcode;
 
 import java.util.List;
 import java.util.Locale;
@@ -154,7 +153,7 @@ public class MapsActivity extends FragmentActivity {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    /*@TargetApi(Build.VERSION_CODES.)
     private void getMyLocation() {
         // Getting reference to the SupportMapFragment of activity_main.xml
         SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -192,5 +191,5 @@ public class MapsActivity extends FragmentActivity {
             double longitude = location.getLongitude();
 
         }
-    }
+    }*/
 }
