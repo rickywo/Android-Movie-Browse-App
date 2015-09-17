@@ -69,16 +69,15 @@ public class EventModel {
         return new ArrayList<>(eventMap.values());
     }
 
-    public boolean removeEvent(Event event) {
+    public boolean removeEvent(String id) {
         //TODO:
         // Check it exist in Map then remove it from list of movie object
         // Finally remove it from eventMap
-        String id = event.getID();
         boolean result = true;
         if(!eventMap.containsKey(id)) {
             result = false;
         } else {
-            eventMap.remove(event.getID());
+            eventMap.remove(id);
         }
         return result;
     }

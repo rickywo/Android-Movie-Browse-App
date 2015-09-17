@@ -9,9 +9,9 @@ public class User {
     public String password;
 
     public User(long userId, String username, String password){
-        this.userId=userId;
-        this.username=username;
-        this.password=password;
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
     }
 
 }

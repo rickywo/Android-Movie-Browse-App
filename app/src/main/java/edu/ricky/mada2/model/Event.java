@@ -1,9 +1,13 @@
 package edu.ricky.mada2.model;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,22 +17,30 @@ import java.util.Map;
 
 public class Event implements Serializable {
 
+    public static String ID = "id";
+    public static String NAME = "name";
+    public static String DATE = "date";
+    public static String VENUE = "venue";
+    public static String LOCATION = "loc";
+    public static String MOVIE_ID = "movie_id";
+    public static String INVITEES = "invitees";
+
     private String eventID, eventName, eventVenue;
     private Location eventLoc;
     private Date eventDate;
     private String movieID;
-    private Map<String ,Invitee> invitees;
+    private List<Invitee> invitees;
 
     public class Location {
 
         double latitude;
         double longitude;
-        Location(String loc) {
+        public Location(String loc) {
             String[] latlong =  loc.split(",");
             this.latitude = Double.parseDouble(latlong[0]);
             this.longitude = Double.parseDouble(latlong[1]);
         }
-        Location(double lat, double lon) {
+        public Location(double lat, double lon) {
             this.latitude = lat;
             this.longitude = lon;
         }
@@ -39,14 +51,69 @@ public class Event implements Serializable {
             return latlong;
         }
     }
-
+    /**
+     * Event constructor
+     * param:
+     * String id: event unique id
+     * String movieID: Scheduled movie id of this event
+     *
+     */
     public Event(String id , String movieID) {
         setID(id);
         setMovie(movieID);
         this.eventName  = null;
         this.eventLoc   = null;
         this.eventDate  = new Date();
-        this.invitees   = new HashMap<>();
+        this.invitees   = new ArrayList<>();
+    }
+
+    /**
+     * Event constructor
+     * param:
+     * JSONObject tempObject: Event json object
+     *
+     */
+
+    public Event(JSONObject tempObject) {
+
+        try {
+            setID(tempObject.getString(ID));}
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            setName(tempObject.getString(NAME));}
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            setEventDate(new Date(tempObject.getString(DATE)));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {setVenue(tempObject.getString(VENUE));}
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {setLocation(new Location(tempObject.getString(LOCATION)));}
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {setMovie(tempObject.getString(MOVIE_ID));}
+        catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        /*try {setInvitees(new ArrayList<Invitee>());}
+        catch (JSONException e) {
+            e.printStackTrace();
+        }*/
+
     }
 
     public String getID() {
@@ -98,40 +165,64 @@ public class Event implements Serializable {
     }
 
     public ArrayList<Invitee> getInvitees() {
-        return new ArrayList<>(invitees.values());
+        return (ArrayList<Invitee>)this.invitees;
     }
 
     public void setInvitees(ArrayList<Invitee> invitees) {
-        for(Invitee inv: invitees) {
-            this.invitees.put(inv.getName(), inv);
-        }
+        this.invitees = invitees;
     }
 
     public boolean removeInviteeByName(String name) {
-        if(this.invitees.containsKey(name)) {
-            this.invitees.remove(name);
-            return true;
-        } else {
-            return false;
+        boolean found = false;
+        for(Invitee ivt: invitees) {
+            if (ivt.getName().equals(name)) {
+                this.invitees.remove(ivt);
+                found =  true;
+            }
         }
+        return found;
     }
 
     public boolean addInvitee(Invitee inv) {
-        if(this.invitees.containsKey(inv.getName())) {
-            return false;
-        } else {
-            this.invitees.put(inv.getName(), inv);
-            return true;
+        boolean result = true;
+        for(Invitee ivt: invitees) {
+            if (ivt.getName().equals(inv.getName())) {
+                result =  false;
+                return result;
+            } else {
+                invitees.add(inv);
+            }
         }
+        return result;
     }
 
     public boolean updateInvitee(Invitee inv) {
-        if(this.invitees.containsKey(inv.getName())) {
-            this.invitees.remove(inv.getName());
-            this.invitees.put(inv.getName(), inv);
-            return true;
-        } else {
-            return false;
+        boolean found = false;
+        for(Invitee ivt: invitees) {
+            if (ivt.getName().equals(inv.getName())) {
+                this.invitees.remove(ivt);
+                this.invitees.add(inv);
+                found =  true;
+            }
         }
+        return found;
+    }
+
+    private String getInviteesAsJsonString() {
+        String inv_jstring = "";
+        return inv_jstring;
+    }
+
+    @Override
+    public String toString() {
+        HashMap<String, String> valueMap = new HashMap<>();
+        valueMap.put(ID, eventID);
+        valueMap.put(NAME, eventName);
+        valueMap.put(DATE, eventDate.toString());
+        valueMap.put(VENUE, eventVenue);
+        valueMap.put(LOCATION, eventLoc.toString());
+        valueMap.put(MOVIE_ID, movieID);
+        valueMap.put(INVITEES, getInviteesAsJsonString());
+        return new JSONObject(valueMap).toString();
     }
 }

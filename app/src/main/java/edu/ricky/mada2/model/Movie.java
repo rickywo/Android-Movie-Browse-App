@@ -111,7 +111,7 @@ public class Movie implements Serializable {
             e.printStackTrace();
         }
 
-        setRating(0);
+        setMyRating(0);
         this.movieEvents = new ArrayList<>();
     }
 
@@ -213,9 +213,9 @@ public class Movie implements Serializable {
         }
     }
 
-    public void setRating(double r) {
+    public void setMyRating(double r) {
         try {
-            movieJson.put(IMDB_RATING, r);
+            movieJson.put(MY_RATING, r);
         } catch (JSONException e) {
             e.printStackTrace();
         }

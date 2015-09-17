@@ -29,6 +29,7 @@ import java.util.Date;
 import edu.ricky.mada2.MainActivity;
 import edu.ricky.mada2.MapsActivity;
 import edu.ricky.mada2.R;
+import edu.ricky.mada2.model.DbModel;
 import edu.ricky.mada2.model.Event;
 import edu.ricky.mada2.model.EventModel;
 import edu.ricky.mada2.model.Invitee;
@@ -43,6 +44,7 @@ public class EventActivity extends ActionBarActivity {
     private MaterialEditText mDatetime, mVenue, mName, mLoc;
     private MovieModel mModel;
     private EventModel eModel;
+    private DbModel db;
     private Movie movie;
     private Event event;
     private String eDatetime;
@@ -100,6 +102,7 @@ public class EventActivity extends ActionBarActivity {
         setContentView(R.layout.activity_event);
         mModel = MovieModel.getSingleton();
         eModel = EventModel.getSingleton();
+        db = DbModel.getSingleton(getApplicationContext());
         getViews();
         setListeners();
         handleBundleExtras();
@@ -259,7 +262,12 @@ public class EventActivity extends ActionBarActivity {
             // Handle adding a new event
             String id = eModel.addEvent(name, date, venue, "-36.4266534,145.23292019999997", movie.getImdbId(), ai);
         }
+        onDatasetChanged();
         backToMainActivity();
+    }
+
+    private void onDatasetChanged() {
+        db.saveAllEvents(eModel.getEventMap());
     }
 
     private void backToMainActivity() {

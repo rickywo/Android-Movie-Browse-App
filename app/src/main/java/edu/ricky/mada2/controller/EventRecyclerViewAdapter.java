@@ -5,6 +5,7 @@ package edu.ricky.mada2.controller;
  */
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +15,17 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
+import java.util.Map;
 
 import edu.ricky.mada2.R;
 import edu.ricky.mada2.model.DbModel;
 import edu.ricky.mada2.model.Event;
 import edu.ricky.mada2.model.EventModel;
+import edu.ricky.mada2.model.Movie;
 
 public class EventRecyclerViewAdapter extends RecyclerView
         .Adapter<EventRecyclerViewAdapter
@@ -101,7 +107,7 @@ public class EventRecyclerViewAdapter extends RecyclerView
     }
 
     public void deleteItem(int index) {
-        eModel.removeEvent(mDataset.get(index));
+        eModel.removeEvent(mDataset.get(index).getID());
         mDataset.remove(index);
         notifyItemRemoved(index);
     }
@@ -121,24 +127,25 @@ public class EventRecyclerViewAdapter extends RecyclerView
     }
 
     private void save() {
-        /*//TODO: Save Movies in the Map into Sqlite
-        db.saveAllMovies(mModel.getMovieMap());
-        return;*/
+        //TODO: Save Movies in the Map into Sqlite
+        db.saveAllEvents(eModel.getEventMap());
+        return;
     }
 
     private void load() {
-        /*//TODO: Load movies from Sqlite to Map
-        Map<String, String> map = db.getAllMovies();
+        //TODO: Load events from Sqlite to Map
+        Map<String, String> map = db.getAllEvents();
         for (Map.Entry<String, String> entry : map.entrySet()) {
             try {
                 JSONObject jo = new JSONObject(entry.getValue());
-                Movie m = new Movie(jo);
-                eModel.addEvent(m);
+                Event e = new Event(jo);
+                eModel.addEvent(e);
+                Log.e("MAD", e.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        return;*/
+        return;
     }
 
     public void close() {

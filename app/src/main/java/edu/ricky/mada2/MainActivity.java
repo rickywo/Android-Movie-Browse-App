@@ -48,6 +48,18 @@ public class MainActivity extends AppCompatActivity implements
     // Event List Fragment
     private EventlistFragment eListFragment = new EventlistFragment();
 
+    private TextView.OnEditorActionListener mSearchActionListener = new TextView.OnEditorActionListener() {
+        @Override
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            if (event == null || event.getAction() == KeyEvent.ACTION_UP) {
+                doSearch(v.getText().toString());
+                v.setText("");
+            }
+
+            return (true);
+        }
+    };
+
 
 
     @Override
@@ -142,17 +154,7 @@ public class MainActivity extends AppCompatActivity implements
 
             edtSeach = (EditText) action.getCustomView().findViewById(R.id.edtSearch); //the text editor
             //this is a listener to do a search when the user clicks on search button
-            edtSeach.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (event == null || event.getAction() == KeyEvent.ACTION_UP) {
-                        doSearch(v.getText().toString());
-                        v.setText("");
-                    }
-
-                    return (true);
-                }
-            });
+            edtSeach.setOnEditorActionListener(mSearchActionListener);
 
             edtSeach.requestFocus();
 
@@ -200,8 +202,6 @@ public class MainActivity extends AppCompatActivity implements
 
     private void doSearch(String movieTitle) {
         Intent intent = new Intent(getBaseContext(), MovieActivity.class);
-        Toast.makeText(getApplicationContext(), movieTitle,
-                Toast.LENGTH_SHORT).show();
         intent.putExtra("title", movieTitle);
         startActivity(intent);
     }
