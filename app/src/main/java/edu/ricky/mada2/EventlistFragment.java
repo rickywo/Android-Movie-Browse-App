@@ -133,7 +133,7 @@ public class EventlistFragment extends Fragment {
     }
 
     public void reloadDataset() {
-        ((EventRecyclerViewAdapter) mAdapter).reloadDataset();
+        ((EventRecyclerViewAdapter) mAdapter).reload();
     }
 
     public void releaseResource() {

@@ -9,30 +9,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.List;
-import java.util.Map;
 
 import edu.ricky.mada2.R;
-import edu.ricky.mada2.model.DbModel;
 import edu.ricky.mada2.model.Event;
-import edu.ricky.mada2.model.EventModel;
-import edu.ricky.mada2.model.Movie;
 
 public class EventRecyclerViewAdapter extends RecyclerView
         .Adapter<EventRecyclerViewAdapter
         .DataObjectHolder> {
-    // Models
-    private EventModel eModel;
-    private DbModel db;
+    // Controller
+    private EventManager eManager;
     // Reference
     private Context context;
     private List<Event> mDataset;
@@ -69,11 +58,9 @@ public class EventRecyclerViewAdapter extends RecyclerView
     }
 
     public EventRecyclerViewAdapter(Context context) {
-        this.eModel = EventModel.getSingleton();
-        this.db = DbModel.getSingleton(context);
+        this.eManager = EventManager.getSingleton(context);
         this.context = context;
-        load();
-        reloadDataset();
+        reload();
     }
 
     @Override
@@ -100,20 +87,8 @@ public class EventRecyclerViewAdapter extends RecyclerView
 
     }
 
-    public void addItem(Event dataObj, int index) {
-        eModel.addEvent(dataObj);
-        mDataset.add(index, dataObj);
-        notifyItemInserted(index);
-    }
-
-    public void deleteItem(int index) {
-        eModel.removeEvent(mDataset.get(index).getID());
-        mDataset.remove(index);
-        notifyItemRemoved(index);
-    }
-
-    public void reloadDataset() {
-        mDataset = eModel.getAllEvent();
+    public void reload() {
+        mDataset = eManager.getList();
         notifyDataSetChanged();
     }
 
@@ -126,31 +101,7 @@ public class EventRecyclerViewAdapter extends RecyclerView
         void onItemClick(List<Event> dataset, int position, View v);
     }
 
-    private void save() {
-        //TODO: Save Movies in the Map into Sqlite
-        db.saveAllEvents(eModel.getEventMap());
-        return;
-    }
-
-    private void load() {
-        //TODO: Load events from Sqlite to Map
-        Map<String, String> map = db.getAllEvents();
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            try {
-                JSONObject jo = new JSONObject(entry.getValue());
-                Event e = new Event(jo);
-                eModel.addEvent(e);
-                Log.e("MAD", e.toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return;
-    }
-
     public void close() {
-        save();
-        eModel.close();
-        db.close();
+        eManager.close();
     }
 }

@@ -1,6 +1,8 @@
 package edu.ricky.mada2.controller;
 
 import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +35,8 @@ public class EventManager {
     private EventManager(Context context) {
         eModel = EventModel.getSingleton();
         db = DbModel.getSingleton(context);
+
+        readFromDB();
     }
 
     public void add(String name, Date date, String venue, String loc, String movieID, List<Invitee> invitees) {
@@ -72,6 +76,19 @@ public class EventManager {
         eModel.removeEvent(id);
     }
 
+    /*private class SyncDb extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                readFromDB();
+            } finally {
+
+            }
+            return null;
+        }
+    }*/
+
     private void writeToDB() {
         //TODO: Save Movies in the Map into Sqlite
         db.saveAllEvents(eModel.getEventMap());
@@ -80,11 +97,12 @@ public class EventManager {
 
     private void readFromDB() {
         //TODO: Load events from Sqlite to Map
-        Map<String, String> map = db.getAllMovies();
+        Map<String, String> map = db.getAllEvents();
         for (Map.Entry<String, String> entry : map.entrySet()) {
             try {
                 JSONObject jo = new JSONObject(entry.getValue());
                 Event e = new Event(jo);
+
                 eModel.addEvent(e);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -93,7 +111,10 @@ public class EventManager {
         return;
     }
 
-    // Create EventID with random 3 digits append to MovieID
+    /**
+     * Create EventID with random 3 digits append to MovieID
+      */
+
     private String createID(String mID)
     {
         Random random = new Random();
@@ -101,7 +122,19 @@ public class EventManager {
         return String.format("%s-%03d", mID, randomInt);
     }
 
+    /**
+     * release DB resource
+     */
     public void close() {
+        Log.e("MAD", "writeToDb");
+        writeToDB();
+    }
 
+    /**
+     *
+     * @return Events as Arraylist
+     */
+    public ArrayList<Event> getList() {
+        return eModel.getAllEvent();
     }
 }

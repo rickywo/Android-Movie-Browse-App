@@ -1,6 +1,7 @@
 package edu.ricky.mada2;
 
 import android.app.Application;
+import android.content.Context;
 
 import edu.ricky.mada2.model.User;
 import edu.ricky.mada2.utility.NetworkStateManager;
@@ -8,7 +9,7 @@ import edu.ricky.mada2.utility.NetworkStateManager;
 public class MovieGangApp extends Application {
 
     // For detecting network connection
-    private NetworkStateManager myStateManager = new NetworkStateManager();
+    private NetworkStateManager myStateManager;
 
     // Login Status
     private boolean login_state;
@@ -16,8 +17,10 @@ public class MovieGangApp extends Application {
     private User current_user;
 
 
-    public NetworkStateManager getStateManager(){
-        return myStateManager ;
+    public void initStateManager(Context context){
+        if(myStateManager == null) {
+            myStateManager = new NetworkStateManager(context);
+        }
     }
 
     /*public MovieGangApp() {
@@ -25,6 +28,10 @@ public class MovieGangApp extends Application {
         setLoginState(false);
         setCurrentUser(null);
     }*/
+
+    public boolean isConnected() {
+        return myStateManager.isConnected;
+    }
 
     public boolean isLoginState() {
         return login_state;

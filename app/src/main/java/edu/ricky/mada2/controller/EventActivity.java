@@ -28,6 +28,7 @@ import java.util.Date;
 
 import edu.ricky.mada2.MainActivity;
 import edu.ricky.mada2.MapsActivity;
+import edu.ricky.mada2.MovieGangApp;
 import edu.ricky.mada2.R;
 import edu.ricky.mada2.model.DbModel;
 import edu.ricky.mada2.model.Event;
@@ -68,7 +69,7 @@ public class EventActivity extends ActionBarActivity {
     private View.OnFocusChangeListener vEditOnfocusChangeListener = new View.OnFocusChangeListener() {
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
-            //if(hasFocus) openMap();
+            if(hasFocus) openMap();
             enableSaveButton();
         }
     };
@@ -188,6 +189,7 @@ public class EventActivity extends ActionBarActivity {
         mSaveButton.setOnClickListener(saveButtonOnClickListener);
         mName.addTextChangedListener(textWatcher);
         mVenue.addTextChangedListener(textWatcher);
+        mVenue.setOnFocusChangeListener(vEditOnfocusChangeListener);
         mDatetime.setOnFocusChangeListener(dEditOnfocusChangeListener);
         mLoc.addTextChangedListener(textWatcher);
     }
@@ -236,8 +238,10 @@ public class EventActivity extends ActionBarActivity {
     }
 
     public void openMap() {
-        Intent intent = new Intent(this.getBaseContext(), MapsActivity.class);
-        this.startActivity(intent);
+        if(((MovieGangApp)getApplication()).isConnected()) {
+            Intent intent = new Intent(this.getBaseContext(), MapsActivity.class);
+            this.startActivity(intent);
+        }
     }
 
     public void saveEvent() {

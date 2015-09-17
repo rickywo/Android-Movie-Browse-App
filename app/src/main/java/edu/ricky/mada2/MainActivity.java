@@ -68,7 +68,9 @@ public class MainActivity extends AppCompatActivity implements
         // Initial DbModel with application context
         // DbModel.getSingleton(this.getApplicationContext());
         setContentView(R.layout.activity_main);
-        netWorkStateManager = ((MovieGangApp)this.getApplication()).getStateManager();
+
+        // Start thread for checking internet connection
+        ((MovieGangApp)this.getApplication()).initStateManager(getApplicationContext());
         initToolbar();
         initDrawer();
         NavigationView navigationView = (NavigationView) findViewById(R.id.vNavigation);
