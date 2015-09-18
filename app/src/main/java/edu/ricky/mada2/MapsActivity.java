@@ -3,6 +3,7 @@ package edu.ricky.mada2;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Criteria;
@@ -15,8 +16,10 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -29,11 +32,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.List;
 import java.util.Locale;
 
-public class MapsActivity extends FragmentActivity {
+import edu.ricky.mada2.controller.EventActivity;
 
+public class MapsActivity extends FragmentActivity {
+    private final static int MAP_REQUEST = 1338;  // Map activity
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private EditText mapSearchBox;
+    private Button mComfirm;
+    private Button mCancel;
     private Location myLoc;
+    private String latlng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,12 +69,21 @@ public class MapsActivity extends FragmentActivity {
                 return false;
             }
         });
+
+        mComfirm = (Button) findViewById(R.id.map_confirm_button);
+        mComfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                comfirmLoc();
+            }
+        });
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        setUpMapIfNeeded();
+        //setUpMapIfNeeded();
     }
 
     /**
@@ -92,7 +109,7 @@ public class MapsActivity extends FragmentActivity {
                     .getMap();
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
-                setUpMap(0, 0);
+                setUpMap(-37.8070901,144.9649695);
             }
         }
     }
@@ -149,11 +166,27 @@ public class MapsActivity extends FragmentActivity {
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
+            latlng = lat + "," + lng;
             setUpMap(lat, lng);
         }
     }
 
-    /*@TargetApi(Build.VERSION_CODES.)
+    private void comfirmLoc() {
+        Intent intent = new Intent();
+        intent.putExtra("venue", mapSearchBox.getText().toString());
+        intent.putExtra("loc", latlng);
+        Log.e("MapActivity", mapSearchBox.getText().toString());
+        setResult (MAP_REQUEST, intent);
+        finish();
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+    }
+
+
+/*@TargetApi(Build.VERSION_CODES.)
     private void getMyLocation() {
         // Getting reference to the SupportMapFragment of activity_main.xml
         SupportMapFragment fm = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);

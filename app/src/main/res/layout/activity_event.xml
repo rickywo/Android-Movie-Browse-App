@@ -111,7 +111,7 @@
                     android:layout_width="62dp"
                     android:layout_height="wrap_content"
                     android:text="+ 1"
-                    android:id="@+id/button"
+                    android:id="@+id/list_invitee_button"
                     android:layout_marginLeft="6dp" />
 
                 <Button
