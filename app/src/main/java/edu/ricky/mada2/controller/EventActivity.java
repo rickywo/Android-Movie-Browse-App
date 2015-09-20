@@ -29,6 +29,8 @@ import android.widget.TimePicker;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
@@ -36,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 import edu.ricky.mada2.MainActivity;
 import edu.ricky.mada2.MapsActivity;
@@ -93,7 +96,7 @@ public class EventActivity extends ActionBarActivity {
     private Movie movie;
     private Event event;
     // Temp arraylist to put invitees in
-    private ArrayList<Invitee> invitees = new ArrayList<>();
+    private HashMap<String, Invitee> invitees = new HashMap<>();
     private String eDatetime;
     private TextWatcher textWatcher = new TextWatcher() {
         @Override
@@ -265,6 +268,7 @@ public class EventActivity extends ActionBarActivity {
             mDatetime.setText(sdf.format(event.getEventDate()));
             mVenue.setText(event.getVenue());
             mLoc.setText(event.getLocation().toString());
+            Log.e("EventActivity", event.toString());
         }
         mTitle.setText(String.format("%s (%s)", movie.getTitle(), movie.getYear()));
     }
@@ -338,6 +342,7 @@ public class EventActivity extends ActionBarActivity {
         String venue = mVenue.getText().toString();
         String loc = mLoc.getText().toString();
         Date date = null;
+        JSONArray tempInviteesArray = new JSONArray(invitees.values());
         try {
             date = sdf.parse(dates);
             Log.e("MAD", "ParseDate correctly");
@@ -346,11 +351,13 @@ public class EventActivity extends ActionBarActivity {
         }
         // Handle updating an event
         if (event != null) {
-            invitees = event.getInvitees();
-            eModel.updateEvent(event, name, date, venue, "-36.4266534,145.23292019999997", movie.getImdbId(), invitees);
+            eModel.updateEvent(event, name, date, venue, loc, movie.getImdbId(), getInviteesJsonString());
         } else {
             // Handle adding a new event
-            String id = eModel.addEvent(name, date, venue, "-36.4266534,145.23292019999997", movie.getImdbId(), invitees);
+            event = eModel.addEvent(name, date, venue, loc, movie.getImdbId(), getInviteesJsonString());
+
+            Log.e("MAD", event.toString());
+
         }
         onDatasetChanged();
         backToMainActivity();
@@ -376,6 +383,7 @@ public class EventActivity extends ActionBarActivity {
                 movie = mModel.getMovieById(mID);
             else if (eID != null) {
                 event = eModel.getEventById(eID);
+                parseInviteesJsonString(event.getInvitees());
                 movie = mModel.getMovieById(event.getMovieID());
             }
 
@@ -390,10 +398,11 @@ public class EventActivity extends ActionBarActivity {
     private void listInvitee() {
         AlertDialog.Builder alt_bld = new AlertDialog.Builder(this);
         //alt_bld.setIcon(R.drawable.icon);
+        ArrayList<Invitee> tempAl = new ArrayList<>(invitees.values());
         alt_bld.setTitle("Invitees");
-        CharSequence[] digitList = new CharSequence[invitees.size()];
-        for (int i = 0; i < invitees.size(); i++) {
-            digitList[i] = invitees.get(i).getName();
+        CharSequence[] digitList = new CharSequence[tempAl.size()];
+        for (int i = 0; i < tempAl.size(); i++) {
+            digitList[i] = tempAl.get(i).getName();
         }
 
         alt_bld.setMultiChoiceItems(digitList, new boolean[]{false, true,
@@ -410,13 +419,11 @@ public class EventActivity extends ActionBarActivity {
 
                 ListView list = ((AlertDialog) dialog).getListView();
 
-                StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < list.getCount(); i++) {
                     boolean checked = list.isItemChecked(i);
 
                     if (checked) {
-                        if (sb.length() > 0) sb.append(",");
-                        sb.append(list.getItemAtPosition(i));
+                        invitees.remove(list.getItemAtPosition(i).toString());
                     }
                 }
             }
@@ -471,7 +478,36 @@ public class EventActivity extends ActionBarActivity {
             Log.e("Phone", phone);
             Log.e("Email", email);
             Invitee i = new Invitee(name, phone, email);
-            invitees.add(i);
+            invitees.put(i.getName(), i);
+        }
+    }
+
+    private String getInviteesJsonString() {
+        int i = 0;
+        String s;
+        JSONArray jsonArray = new JSONArray();
+        for(Invitee in: invitees.values()) {
+            HashMap<String, String> hm = new HashMap<>();
+            hm.put("name", in.getName());
+            hm.put("email", in.getEmail());
+            hm.put("phone", in.getPhone());
+            jsonArray.put(new JSONObject(hm));
+        }
+        Log.e("jsonArray", jsonArray.toString());
+        return jsonArray.toString();
+    }
+
+    private void parseInviteesJsonString(String jsonArrayString) {
+        JSONArray jsonArray;
+        try {
+            Log.e("parseInviteesJsonString", jsonArrayString);
+            jsonArray = new JSONArray(jsonArrayString);
+            for(int i = 0 ; i< jsonArray.length();i++) {
+                Invitee inv = new Invitee(jsonArray.getJSONObject(i));
+                invitees.put(inv.getName(), inv);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 }

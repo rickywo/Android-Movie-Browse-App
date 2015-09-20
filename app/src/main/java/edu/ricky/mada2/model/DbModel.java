@@ -172,6 +172,7 @@ public class DbModel extends SQLiteOpenHelper {
                 ContentValues values = new ContentValues();
                 values.put("id", entry.getKey());
                 values.put("json", (entry.getValue()).toString());
+                Log.e("saveAllEvents", (entry.getValue()).toString());
                 db.insert(TABLE_EVENTS, null, values);
             } catch (Exception e) {
             }

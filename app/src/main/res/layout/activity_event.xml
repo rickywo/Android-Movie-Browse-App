@@ -51,7 +51,7 @@
                 android:id="@+id/event_datetime_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Material Design Icon"
+                android:hint="dd.MM.yyyy HH:mm"
                 app:met_iconLeft="@mipmap/ic_access_time_black_24dp"
                 app:met_iconPadding="0dp"/>
             <TextView
@@ -67,7 +67,7 @@
                 android:id="@+id/event_venue_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Material Design Icon"
+                android:hint="Your Home"
                 app:met_iconLeft="@mipmap/ic_location_on_black_24dp"
                 app:met_iconPadding="0dp"/>
             <TextView
@@ -83,7 +83,7 @@
                 android:id="@+id/event_loc_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Material Design Icon"
+                android:hint=""
                 app:met_iconLeft="@mipmap/ic_gps_fixed_black_24dp"
                 app:met_iconPadding="0dp"/>
             <TextView

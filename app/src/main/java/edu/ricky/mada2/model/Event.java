@@ -1,5 +1,6 @@
 package edu.ricky.mada2.model;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,7 +30,7 @@ public class Event implements Serializable {
     private Location eventLoc;
     private Date eventDate;
     private String movieID;
-    private List<Invitee> invitees;
+    private String invitees;
 
     public class Location {
 
@@ -64,7 +65,7 @@ public class Event implements Serializable {
         this.eventName  = null;
         this.eventLoc   = null;
         this.eventDate  = new Date();
-        this.invitees   = new ArrayList<>();
+        this.invitees   = new JSONArray().toString();
     }
 
     /**
@@ -109,10 +110,10 @@ public class Event implements Serializable {
             e.printStackTrace();
         }
 
-        /*try {setInvitees(new ArrayList<Invitee>());}
+        try {setInvitees(tempObject.getString(INVITEES));}
         catch (JSONException e) {
             e.printStackTrace();
-        }*/
+        }
 
     }
 
@@ -164,54 +165,72 @@ public class Event implements Serializable {
         this.eventLoc = loc;
     }
 
-    public ArrayList<Invitee> getInvitees() {
-        return (ArrayList<Invitee>)this.invitees;
+    public String getInvitees() {
+        return this.invitees;
     }
 
-    public void setInvitees(ArrayList<Invitee> invitees) {
-        this.invitees = invitees;
+    public void setInvitees(String s) {
+        this.invitees = s;
     }
 
     public boolean removeInviteeByName(String name) {
         boolean found = false;
-        for(Invitee ivt: invitees) {
-            if (ivt.getName().equals(name)) {
-                this.invitees.remove(ivt);
-                found =  true;
+        try {
+            JSONArray tl = new JSONArray(invitees);
+
+            for(int i = 0 ;i <tl.length();i++) {
+                if(tl.getJSONObject(i).getString(NAME).equals(name)) {
+                    tl.remove(i);
+                }
             }
+
+            invitees = tl.toString();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         return found;
     }
 
-    public boolean addInvitee(Invitee inv) {
-        boolean result = true;
-        for(Invitee ivt: invitees) {
-            if (ivt.getName().equals(inv.getName())) {
-                result =  false;
-                return result;
-            } else {
-                invitees.add(inv);
+    public boolean addInvitee(JSONObject json) {
+        try {
+            JSONArray tl = new JSONArray(invitees);
+
+            for(int i = 0 ;i <tl.length();i++) {
+                if(tl.getJSONObject(i).getString(NAME).equals(json.getString(NAME))) {
+                    return false;
+                }
             }
+
+            tl.put(json);
+            this.invitees = tl.toString();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        return result;
+        return true;
     }
 
-    public boolean updateInvitee(Invitee inv) {
-        boolean found = false;
-        for(Invitee ivt: invitees) {
-            if (ivt.getName().equals(inv.getName())) {
-                this.invitees.remove(ivt);
-                this.invitees.add(inv);
-                found =  true;
+    public boolean addInvitee(String jsonString) {
+        try {
+            JSONArray tl = new JSONArray(invitees);
+            JSONObject json = new JSONObject(jsonString);
+
+            for(int i = 0 ;i <tl.length();i++) {
+                if(tl.getJSONObject(i).getString(NAME).equals(json.getString(NAME))) {
+                    return false;
+                }
             }
+
+            tl.put(json);
+            this.invitees = tl.toString();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        return found;
+        return true;
     }
 
-    private String getInviteesAsJsonString() {
-        String inv_jstring = "";
-        return inv_jstring;
-    }
 
     @Override
     public String toString() {
@@ -222,7 +241,7 @@ public class Event implements Serializable {
         valueMap.put(VENUE, eventVenue);
         valueMap.put(LOCATION, eventLoc.toString());
         valueMap.put(MOVIE_ID, movieID);
-        valueMap.put(INVITEES, getInviteesAsJsonString());
+        valueMap.put(INVITEES, invitees);
         return new JSONObject(valueMap).toString();
     }
 }

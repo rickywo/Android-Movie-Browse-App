@@ -1,5 +1,10 @@
 package edu.ricky.mada2.model;
 
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,9 +42,10 @@ public class EventModel {
      * 3. Add event into Movie object's event list
      * 4. put new event into eventMap
      */
-    public String addEvent(String name, Date date, String venue, String loc, String movieID, List<Invitee> invitees) {
+    public Event addEvent(String name, Date date, String venue, String loc, String movieID, String invitees) {
         String id;
         Event event;
+
         do{
             id = createID(movieID);
         } while(contains(id));
@@ -49,10 +55,23 @@ public class EventModel {
         event.setEventDate(date);
         event.setLocation(event.new Location(loc));
         event.setMovie(movieID);
-        event.setInvitees((ArrayList<Invitee>) invitees);
+        //event.setInvitees(invitees);
+        Log.e("EventModel", invitees);
+        try {
+            JSONArray tl = new JSONArray(invitees);
+
+            for(int i = 0 ;i <tl.length();i++) {
+                Log.e("EventModel", tl.getJSONObject(i).toString());
+                event.addInvitee(tl.getJSONObject(i).toString());
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         eventMap.put(event.getID(), event);
-        return event.getID();
+
+        return event;
     }
 
     public String addEvent(Event event) {
@@ -99,7 +118,7 @@ public class EventModel {
         return result;
     }
 
-    public boolean updateEvent(Event event, String name, Date date, String venue, String loc, String movieID, List<Invitee> invitees) {
+    public boolean updateEvent(Event event, String name, Date date, String venue, String loc, String movieID, String invitees) {
         boolean result = true;
         String id = event.getID();
         if(!eventMap.containsKey(id)) {
@@ -112,7 +131,7 @@ public class EventModel {
             event.setEventDate(date);
             event.setLocation(event.new Location(loc));
             event.setMovie(movieID);
-            event.setInvitees((ArrayList<Invitee>) invitees);
+            event.setInvitees(invitees);
             eventMap.put(id, event);
         }
         return result;

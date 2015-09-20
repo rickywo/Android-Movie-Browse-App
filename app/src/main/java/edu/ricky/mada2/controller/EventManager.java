@@ -39,7 +39,7 @@ public class EventManager {
         readFromDB();
     }
 
-    public void add(String name, Date date, String venue, String loc, String movieID, List<Invitee> invitees) {
+    public void add(String name, Date date, String venue, String loc, String movieID, String invitees) {
         String id;
         Event event;
         do{
@@ -51,11 +51,11 @@ public class EventManager {
         event.setEventDate(date);
         event.setLocation(event.new Location(loc));
         event.setMovie(movieID);
-        event.setInvitees((ArrayList<Invitee>) invitees);
+        event.setInvitees(invitees);
         eModel.addEvent(event);
     }
 
-    public boolean update(String id, String name, Date date, String venue, String loc, String movieID, List<Invitee> invitees) {
+    public boolean update(String id, String name, Date date, String venue, String loc, String movieID, String invitees) {
         boolean result = true;
         if(!eModel.contains(id)) {
             result = false;
@@ -67,7 +67,7 @@ public class EventManager {
             event.setEventDate(date);
             event.setLocation(event.new Location(loc));
             event.setMovie(movieID);
-            event.setInvitees((ArrayList<Invitee>) invitees);
+            event.setInvitees(invitees);
         }
         return result;
     }
@@ -100,9 +100,11 @@ public class EventManager {
         Map<String, String> map = db.getAllEvents();
         for (Map.Entry<String, String> entry : map.entrySet()) {
             try {
-                JSONObject jo = new JSONObject(entry.getValue());
-                Event e = new Event(jo);
 
+                JSONObject jo = new JSONObject(entry.getValue());
+                Log.e("readFromDB", jo.toString());
+                Event e = new Event(jo);
+                Log.e("readFromDB", e.toString());
                 eModel.addEvent(e);
             } catch (JSONException e) {
                 e.printStackTrace();
