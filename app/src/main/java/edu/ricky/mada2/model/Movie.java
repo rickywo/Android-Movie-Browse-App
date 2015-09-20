@@ -1,5 +1,7 @@
 package edu.ricky.mada2.model;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.Serializable;
@@ -111,7 +113,13 @@ public class Movie implements Serializable {
             e.printStackTrace();
         }
 
-        setMyRating(0);
+        try {
+            setMyRating(tempObject.getDouble(MY_RATING));
+            Log.e("Movie",String.valueOf(tempObject.getDouble(MY_RATING)) );
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         this.movieEvents = new ArrayList<>();
     }
 

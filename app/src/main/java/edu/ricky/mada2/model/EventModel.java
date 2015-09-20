@@ -42,7 +42,7 @@ public class EventModel {
      * 3. Add event into Movie object's event list
      * 4. put new event into eventMap
      */
-    public Event addEvent(String name, Date date, String venue, String loc, String movieID, String invitees) {
+    public Event addEvent(String name, Date date, String venue, String loc, String movieID, String invitees)  throws NumberFormatException {
         String id;
         Event event;
 
@@ -118,7 +118,7 @@ public class EventModel {
         return result;
     }
 
-    public boolean updateEvent(Event event, String name, Date date, String venue, String loc, String movieID, String invitees) {
+    public boolean updateEvent(Event event, String name, Date date, String venue, String loc, String movieID, String invitees)  throws NumberFormatException {
         boolean result = true;
         String id = event.getID();
         if(!eventMap.containsKey(id)) {

@@ -1,6 +1,7 @@
 package edu.ricky.mada2.controller;
 
 import android.content.Intent;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -13,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import edu.ricky.mada2.MovieActivity;
+import edu.ricky.mada2.MovieGangApp;
 import edu.ricky.mada2.R;
 import edu.ricky.mada2.model.Movie;
 import edu.ricky.mada2.model.MovieModel;
@@ -56,11 +58,24 @@ public class MovieDetailController {
 
 
     public void loadMovieByID(String movieID, boolean longPlot) {
-        OmdbAsyncTask task = new OmdbAsyncTask(this, mActivity, 0);
-        if(longPlot)
-            task.execute("i="+movieID+"&"+"plot=full");
-        else
-            task.execute("i="+movieID);
+        // if network connected
+        if(((MovieGangApp) mActivity.getApplication()).isConnected()) {
+
+            OmdbAsyncTask task = new OmdbAsyncTask(this, mActivity, 0);
+            if (longPlot)
+                task.execute("i=" + movieID + "&" + "plot=full");
+            else
+                task.execute("i=" + movieID);
+        } else {
+            try {
+                Log.e("LoadMovieByID", model.getMovieById(movieID).getJsonString());
+                onLoadingFinished(new JSONObject(model.getMovieById(movieID).getJsonString()));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        // if not connected
+
     }
 
     public void loadMovieByTitle(String movieTitle, boolean longPlot) {
@@ -90,6 +105,7 @@ public class MovieDetailController {
     }
 
     public void saveMovie() {
+        Log.e("saveMovie", "loadMovieByID(tempMovie.getImdbId(), false)");
         saveState = true;
         loadMovieByID(tempMovie.getImdbId(), false);
     }
@@ -120,15 +136,25 @@ public class MovieDetailController {
 
         tempMovie = new Movie(jsonObject);
         if(saveState) {
-            if(result)
-                model.addMovie(tempMovie);
-            else
+            if(result) {
+                tempMovie.setMyRating(mRatingBar.getRating());
+                Log.e("saveMovie", tempMovie.getJsonString());
+                if(!model.addMovie(tempMovie)) model.updateMovie(tempMovie);
+            } else
                 Toast.makeText(mActivity.getApplicationContext(), "Save Movie failed",
                         Toast.LENGTH_SHORT).show();
         } else {
-            if(result)
-                displayMovieDetail();
-            else
+            if(result) {
+                try {
+                    tempMovie.setMyRating(model.getMovieById(tempMovie.getImdbId()).getMyRating());
+                    Log.e("displayMovieDetail", tempMovie.getJsonString());
+                } catch (Exception e) {
+
+                } finally {
+                    displayMovieDetail();
+                }
+
+            } else
                 mActivity.finish();
         }
         saveState = false;

@@ -1,6 +1,5 @@
 package edu.ricky.mada2.controller;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -26,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.rengwuxian.materialedittext.MaterialEditText;
 
@@ -236,14 +236,12 @@ public class EventActivity extends ActionBarActivity {
                         //eDate = new Date(year-1900, monthOfYear, dayOfMonth)
                         eDatetime = String.format("%02d.%02d.%04d", dayOfMonth, (monthOfYear + 1), year);
                         showTimePickerDialog();
-                        //setEvent();
 
                     }
                 }, mYear, mMonth, mDay);
         dpd.setOnDismissListener(new DialogInterface.OnDismissListener() {
             public void onDismiss(DialogInterface dialog) {
                 // Cancel code here
-                //mDatetime.setText("");
                 mDatetime.clearFocus();
             }
         });
@@ -268,9 +266,11 @@ public class EventActivity extends ActionBarActivity {
             mDatetime.setText(sdf.format(event.getEventDate()));
             mVenue.setText(event.getVenue());
             mLoc.setText(event.getLocation().toString());
+            parseInviteesJsonString(event.getInvitees());
             Log.e("EventActivity", event.toString());
         }
         mTitle.setText(String.format("%s (%s)", movie.getTitle(), movie.getYear()));
+        updateListInviteeButton();
     }
 
     private void setListeners() {
@@ -345,19 +345,21 @@ public class EventActivity extends ActionBarActivity {
         JSONArray tempInviteesArray = new JSONArray(invitees.values());
         try {
             date = sdf.parse(dates);
-            Log.e("MAD", "ParseDate correctly");
         } catch (ParseException e) {
-            Log.e("MAD", "ParseDate failed");
+            Log.e("saveEvent", "ParseDate failed");
         }
-        // Handle updating an event
-        if (event != null) {
-            eModel.updateEvent(event, name, date, venue, loc, movie.getImdbId(), getInviteesJsonString());
-        } else {
-            // Handle adding a new event
-            event = eModel.addEvent(name, date, venue, loc, movie.getImdbId(), getInviteesJsonString());
-
-            Log.e("MAD", event.toString());
-
+        try {
+            // Handle updating an event
+            if (event != null) {
+                eModel.updateEvent(event, name, date, venue, loc, movie.getImdbId(), getInviteesJsonString());
+            } else {
+                // Handle adding a new event
+                event = eModel.addEvent(name, date, venue, loc, movie.getImdbId(), getInviteesJsonString());
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.WRONG_LOCATION_FORMAT),
+                    Toast.LENGTH_SHORT).show();
+            return;
         }
         onDatasetChanged();
         backToMainActivity();
@@ -383,7 +385,6 @@ public class EventActivity extends ActionBarActivity {
                 movie = mModel.getMovieById(mID);
             else if (eID != null) {
                 event = eModel.getEventById(eID);
-                parseInviteesJsonString(event.getInvitees());
                 movie = mModel.getMovieById(event.getMovieID());
             }
 
@@ -424,6 +425,7 @@ public class EventActivity extends ActionBarActivity {
 
                     if (checked) {
                         invitees.remove(list.getItemAtPosition(i).toString());
+                        updateListInviteeButton();
                     }
                 }
             }
@@ -441,8 +443,8 @@ public class EventActivity extends ActionBarActivity {
     }
 
     private void handleSetVenue(Intent data) {
-        Bundle results = data.getExtras ();
-        if (results != null){
+        Bundle results = data.getExtras();
+        if (results != null) {
             mVenue.setText(results.getString("venue"));
             mLoc.setText(results.getString("loc"));
         }
@@ -474,11 +476,9 @@ public class EventActivity extends ActionBarActivity {
                 email = emailCur.getString(emailCur.getColumnIndex(EMAIL));
             }
             emailCur.close();
-            Log.e("Name", name);
-            Log.e("Phone", phone);
-            Log.e("Email", email);
             Invitee i = new Invitee(name, phone, email);
             invitees.put(i.getName(), i);
+            updateListInviteeButton();
         }
     }
 
@@ -486,7 +486,7 @@ public class EventActivity extends ActionBarActivity {
         int i = 0;
         String s;
         JSONArray jsonArray = new JSONArray();
-        for(Invitee in: invitees.values()) {
+        for (Invitee in : invitees.values()) {
             HashMap<String, String> hm = new HashMap<>();
             hm.put("name", in.getName());
             hm.put("email", in.getEmail());
@@ -502,12 +502,16 @@ public class EventActivity extends ActionBarActivity {
         try {
             Log.e("parseInviteesJsonString", jsonArrayString);
             jsonArray = new JSONArray(jsonArrayString);
-            for(int i = 0 ; i< jsonArray.length();i++) {
+            for (int i = 0; i < jsonArray.length(); i++) {
                 Invitee inv = new Invitee(jsonArray.getJSONObject(i));
                 invitees.put(inv.getName(), inv);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void updateListInviteeButton() {
+        mListInvitee.setText("+" + invitees.size());
     }
 }

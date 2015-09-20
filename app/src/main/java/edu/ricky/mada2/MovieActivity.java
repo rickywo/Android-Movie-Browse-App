@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ public class MovieActivity extends AppCompatActivity {
     Toolbar mToolbar;
     CircleButton mSaveMovieButton;
     CircleButton mAddEventButton;
+    RatingBar mRatingBar;
     MovieDetailController mController;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +34,12 @@ public class MovieActivity extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar_movie);
         mSaveMovieButton = (CircleButton) findViewById(R.id.save_movie_button);
         mAddEventButton = (CircleButton) findViewById(R.id.add_event_button);
+        mRatingBar = (RatingBar) findViewById(R.id.toolbar_movie_ratingBar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         mSaveMovieButton.setOnClickListener(saveButtonOnclickListener);
         mAddEventButton.setOnClickListener(addEventOnclickListener);
+        mRatingBar.setOnRatingBarChangeListener(mOnRatingBarChangeListener);
         // Get Intent Bundle of Movie ID
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -84,6 +88,13 @@ public class MovieActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             mController.addEvent();
+        }
+    };
+
+    private RatingBar.OnRatingBarChangeListener mOnRatingBarChangeListener = new RatingBar.OnRatingBarChangeListener() {
+        @Override
+        public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+            //mController.saveMovie();
         }
     };
 }

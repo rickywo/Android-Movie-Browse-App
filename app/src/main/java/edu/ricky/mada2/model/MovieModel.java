@@ -79,9 +79,18 @@ public class MovieModel {
         if(contains(movie.getImdbId())) {
             return false;
         }
-
+        Log.e("addMovie", movie.toString());
         this.movieMap.put(movie.getImdbId(), movie);
         return true;
+    }
+
+    public boolean updateMovie(Movie movie) {
+        if(contains(movie.getImdbId())) {
+            this.movieMap.remove(movie.getImdbId());
+            this.movieMap.put(movie.getImdbId(), movie);
+            return true;
+        }
+        return false;
     }
 
     public boolean removeMovie(Movie m) {

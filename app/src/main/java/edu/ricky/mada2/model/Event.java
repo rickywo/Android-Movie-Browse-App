@@ -36,7 +36,7 @@ public class Event implements Serializable {
 
         double latitude;
         double longitude;
-        public Location(String loc) {
+        public Location(String loc) throws NumberFormatException{
             String[] latlong =  loc.split(",");
             this.latitude = Double.parseDouble(latlong[0]);
             this.longitude = Double.parseDouble(latlong[1]);
