@@ -2,12 +2,12 @@ package edu.ricky.mada2.model;
 
 import android.util.Log;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import edu.ricky.mada2.utility.BoundedLruCache;
 
 /**
  * Created by Ricky Wu on 2015/8/26.
@@ -31,19 +31,7 @@ public class MovieModel {
     // Construction
     private MovieModel()
     {
-        this.movieMap = new HashMap<>();
-
-        /*for(String s: MovieSamples.mvJsons) {
-            JSONObject jsonObj = null;
-            try {
-                jsonObj = new JSONObject(s);
-                //Movie m = new Movie(jsonObj);
-                addMovie(jsonObj);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }*/
+        this.movieMap = new BoundedLruCache<>(10);
     }
 
     // Model Access

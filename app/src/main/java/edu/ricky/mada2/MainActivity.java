@@ -21,9 +21,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
-import edu.ricky.mada2.model.User;
 import edu.ricky.mada2.utility.*;
 
 public class MainActivity extends AppCompatActivity implements
@@ -203,10 +200,11 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * doSearch
      * param movieTitle: movie name string
-     * TODO: send input string from searching bar to MovieActivity
+     *
      */
 
     private void doSearch(String movieTitle) {
+        // TODO: send input string from searching bar to MovieActivity
         Intent intent = new Intent(getBaseContext(), MovieActivity.class);
         intent.putExtra("title", movieTitle);
         startActivity(intent);

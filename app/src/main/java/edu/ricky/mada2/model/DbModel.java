@@ -7,8 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.firebase.client.Firebase;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by Ricky Wu on 2015/9/5.
@@ -130,6 +133,7 @@ public class DbModel extends SQLiteOpenHelper {
      * @return Map object, entry <event id string, event JSONobject string>
      */
     public Map<String, String> getAllEvents() {
+        // For Local Db
         Map<String, String> eventJsonMap = new HashMap<>();
 
 
@@ -158,7 +162,7 @@ public class DbModel extends SQLiteOpenHelper {
      */
     public void saveAllEvents(Map<String, Event> eventMap) {
 
-
+        // For local db
         // 1. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
         // 2. clear all data from table

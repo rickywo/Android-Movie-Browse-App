@@ -16,14 +16,14 @@ import java.util.List;
 
 import edu.ricky.mada2.R;
 import edu.ricky.mada2.model.Event;
+import edu.ricky.mada2.model.EventModel;
 
 public class EventRecyclerViewAdapter extends RecyclerView
         .Adapter<EventRecyclerViewAdapter
         .DataObjectHolder> {
-    // Controller
-    private EventManager eManager;
     // Reference
     private Context context;
+    private EventModel eModel;
     private List<Event> mDataset;
     private MyClickListener myClickListener;
 
@@ -58,8 +58,8 @@ public class EventRecyclerViewAdapter extends RecyclerView
     }
 
     public EventRecyclerViewAdapter(Context context) {
-        this.eManager = EventManager.getSingleton(context);
         this.context = context;
+        this.eModel = EventModel.getSingleton();
         reload();
     }
 
@@ -76,6 +76,7 @@ public class EventRecyclerViewAdapter extends RecyclerView
     @Override
     public void onBindViewHolder(final DataObjectHolder holder, int position) {
         holder.name.setText(mDataset.get(position).getName());
+        Log.e("onBindViewHolder", "Name " + mDataset.get(position).getName());
         holder.date.setText(mDataset.get(position).getEventDate().toString());
         holder.venue.setText(mDataset.get(position).getVenue());
         holder.loc.setText(mDataset.get(position).getLocation().toString());
@@ -88,7 +89,9 @@ public class EventRecyclerViewAdapter extends RecyclerView
     }
 
     public void reload() {
-        mDataset = eManager.getList();
+        if(eModel.getAllEvent()!=null) {
+            mDataset = eModel.getAllEvent();
+        }
         notifyDataSetChanged();
     }
 
@@ -102,6 +105,5 @@ public class EventRecyclerViewAdapter extends RecyclerView
     }
 
     public void close() {
-        eManager.close();
     }
 }

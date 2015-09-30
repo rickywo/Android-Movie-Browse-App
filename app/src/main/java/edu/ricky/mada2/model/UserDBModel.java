@@ -8,6 +8,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+import com.firebase.client.AuthData;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+
+import java.util.Map;
 
 /**
  * Created by csimon on 12/11/13.
@@ -15,9 +22,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class UserDBModel extends SQLiteOpenHelper {
 
     private final static int DB_VERSION = 10;
+    // Init Firebase db reference
+    private Firebase ref = new Firebase("https://crackling-heat-3830.firebaseio.com");
 
     public UserDBModel(Context context) {
+        // init local db
         super(context, "myApp.db", null, DB_VERSION);
+        //
     }
 
     @Override
@@ -80,5 +91,51 @@ public class UserDBModel extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         return myUser;
+    }
+
+    private void firebaseCreateUser(String uid, String pw) {
+        ref.createUser(uid, pw, new Firebase.ValueResultHandler<Map<String, Object>>() {
+            @Override
+            public void onSuccess(Map<String, Object> result) {
+                Log.d("firebaseCreateUser", "Successfully created user account with uid: " + result.get("uid"));
+            }
+            @Override
+            public void onError(FirebaseError firebaseError) {
+                // there was an error
+            }
+        });
+    }
+
+    private void firebaseLoginUser(String uid, String pw) {
+        ref.authWithPassword(uid, pw, new Firebase.AuthResultHandler() {
+            @Override
+            public void onAuthenticated(AuthData authData) {
+                Log.d("firebaseCreateUser", "User ID: " + authData.getUid() + ", Provider: " + authData.getProvider());
+            }
+
+            @Override
+            public void onAuthenticationError(FirebaseError firebaseError) {
+                // there was an error
+                // Something went wrong :(
+                switch (firebaseError.getCode()) {
+                    case FirebaseError.USER_DOES_NOT_EXIST:
+                        // handle a non existing user
+                        break;
+                    case FirebaseError.INVALID_PASSWORD:
+                        // handle an invalid password
+                        break;
+                    case FirebaseError.NETWORK_ERROR:
+                        // handle a network error
+                        break;
+                    default:
+                        // handle other errors
+                        break;
+                }
+            }
+        });
+    }
+
+    private void firebaseLogoutUser() {
+        ref.unauth();
     }
 }

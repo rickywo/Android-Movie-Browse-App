@@ -3,10 +3,17 @@ package edu.ricky.mada2;
 import android.app.Application;
 import android.content.Context;
 
+import com.firebase.client.Firebase;
+
+import edu.ricky.mada2.model.EventModel;
+import edu.ricky.mada2.model.MovieModel;
 import edu.ricky.mada2.model.User;
 import edu.ricky.mada2.utility.NetworkStateManager;
 
 public class MovieGangApp extends Application {
+
+    private EventModel eventModel;
+    private MovieModel movieModel;
 
     // For detecting network connection
     private NetworkStateManager myStateManager;
@@ -16,18 +23,21 @@ public class MovieGangApp extends Application {
     // Current login user reference (null if login state == false)
     private User current_user;
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Firebase.setAndroidContext(this);
+        // init models for this app
+        eventModel = EventModel.getSingleton();
+        movieModel = MovieModel.getSingleton();
+        // other setup code
+    }
 
     public void initStateManager(Context context){
         if(myStateManager == null) {
             myStateManager = new NetworkStateManager(context);
         }
     }
-
-    /*public MovieGangApp() {
-        super();
-        setLoginState(false);
-        setCurrentUser(null);
-    }*/
 
     public boolean isConnected() {
         return myStateManager.isConnected;
