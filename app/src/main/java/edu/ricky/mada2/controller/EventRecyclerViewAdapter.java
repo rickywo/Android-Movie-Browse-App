@@ -76,7 +76,6 @@ public class EventRecyclerViewAdapter extends RecyclerView
     @Override
     public void onBindViewHolder(final DataObjectHolder holder, int position) {
         holder.name.setText(mDataset.get(position).getName());
-        Log.e("onBindViewHolder", "Name " + mDataset.get(position).getName());
         holder.date.setText(mDataset.get(position).getEventDate().toString());
         holder.venue.setText(mDataset.get(position).getVenue());
         holder.loc.setText(mDataset.get(position).getLocation().toString());

@@ -80,7 +80,6 @@ public class EventActivity extends ActionBarActivity implements ProgressDialogAc
 
                 CONTENT_URI = (Uri) clazz.getField("CONTENT_URI").get(clazz);
             } catch (Throwable t) {
-                Log.e("Contact Picker", "Exception when determining CONTENT_URI", t);
             }
         } else {
             CONTENT_URI = Contacts.People.CONTENT_URI;
@@ -176,6 +175,7 @@ public class EventActivity extends ActionBarActivity implements ProgressDialogAc
         dialog = new ProgressDialog(this);
         getViews();
         setListeners();
+        Log.d("EventActivity.onCreate", "beforeHandleBundleExtras");
         handleBundleExtras();
         parseDataToViews();
     }
@@ -274,7 +274,6 @@ public class EventActivity extends ActionBarActivity implements ProgressDialogAc
             mVenue.setText(event.getVenue());
             mLoc.setText(event.getLocation().toString());
             parseInviteesJsonString(event.getInvitees());
-            Log.e("EventActivity", event.toString());
             updateListInviteeButton();
         }
         if(movie != null)
@@ -355,12 +354,11 @@ public class EventActivity extends ActionBarActivity implements ProgressDialogAc
         try {
             date = sdf.parse(dates);
         } catch (ParseException e) {
-            Log.e("saveEvent", "ParseDate failed");
         }
         try {
             // Handle updating an event
             if (event != null) {
-                eModel.updateEvent(event, name, date, venue, loc, movie.getImdbId(), getInviteesJsonString());
+                eModel.updateEvent(event, name, date, venue, loc, event.getMovieID(), getInviteesJsonString());
             } else {
                 // Handle adding a new event
                 event = eModel.addEvent(name, date, venue, loc, movie.getImdbId(), getInviteesJsonString());
@@ -517,7 +515,6 @@ public class EventActivity extends ActionBarActivity implements ProgressDialogAc
     private void parseInviteesJsonString(String jsonArrayString) {
         JSONArray jsonArray;
         try {
-            Log.e("parseInviteesJsonString", jsonArrayString);
             jsonArray = new JSONArray(jsonArrayString);
             for (int i = 0; i < jsonArray.length(); i++) {
                 Invitee inv = new Invitee(jsonArray.getJSONObject(i));

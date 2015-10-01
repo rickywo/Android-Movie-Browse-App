@@ -49,7 +49,6 @@ public class EventModel {
                     String json = dataSnapshot.getValue().toString();
                     Event event = new Event(new JSONObject(json));
                     eventMap.put(event.getID(), event);
-                    Log.d("onChildAdded" , dataSnapshot.toString());
                 } catch (JSONException je){
                 }
                 //BlogPost newPost = snapshot.getValue(BlogPost.class);
@@ -63,7 +62,6 @@ public class EventModel {
                     Event event = new Event(new JSONObject(json));
                     eventMap.remove(event.getID());
                     eventMap.put(event.getID(), event);
-                    Log.d("onChildAdded", dataSnapshot.toString());
                 } catch (JSONException je){
                 }
             }
@@ -117,7 +115,6 @@ public class EventModel {
         event.setEventDate(date);
         event.setLocation(event.new Location(loc));
         event.setMovie(movieID);
-        Log.e("EventModel", invitees);
         try {
             JSONArray tl = new JSONArray(invitees);
 

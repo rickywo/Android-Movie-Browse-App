@@ -152,12 +152,10 @@ public class MapsActivity extends FragmentActivity {
 
                 // Now do something with this GeoPoint:
                 // Barcode.GeoPoint p = new Barcode.GeoPoint((int) (address.getLatitude() * 1E6), (int) (address.getLongitude() * 1E6))
-                Log.e("Map", String.valueOf(address.getLatitude()) + String.valueOf(address.getLongitude()));
                 lat = address.getLatitude();
                 lng = address.getLongitude();
 
             } catch (Exception e) {
-                Log.e("", "Something went wrong: ", e);
                 return false;
             }
             return true;
@@ -175,7 +173,6 @@ public class MapsActivity extends FragmentActivity {
         Intent intent = new Intent();
         intent.putExtra("venue", mapSearchBox.getText().toString());
         intent.putExtra("loc", latlng);
-        Log.e("MapActivity", mapSearchBox.getText().toString());
         setResult (MAP_REQUEST, intent);
         finish();
     }

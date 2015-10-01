@@ -130,8 +130,8 @@ public class MovielistFragment extends Fragment {
         public void onFragmentInteraction(Uri uri);
     }
 
-    public void reloadDataset() {
-        ((MainRecyclerViewAdapter) mAdapter).reloadDataset();
+    public void reloadDataset(int list) {
+        ((MainRecyclerViewAdapter) mAdapter).reloadDataset(list);
     }
 
     public void releaseResource() {

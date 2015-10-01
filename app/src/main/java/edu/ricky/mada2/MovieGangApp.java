@@ -13,8 +13,8 @@ import edu.ricky.mada2.utility.NetworkStateManager;
 
 public class MovieGangApp extends Application {
 
-    private EventModel eventModel;
-    private MovieModel movieModel;
+    public EventModel eventModel;
+    public MovieModel movieModel;
 
     // For detecting network connection
     private NetworkStateManager myStateManager;

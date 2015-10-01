@@ -1,5 +1,6 @@
 package edu.ricky.mada2;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -25,13 +26,14 @@ import edu.ricky.mada2.utility.*;
 
 public class MainActivity extends AppCompatActivity implements
         MovielistFragment.OnFragmentInteractionListener,
-        EventlistFragment.OnFragmentInteractionListener {
+        EventlistFragment.OnFragmentInteractionListener, ProgressDialogActivity {
     public static final int MOVIE_FRAGMENT = 0;
     public static final int EVENT_FRAGMENT = 1;
     // Indicates the state of search component is currently enabled/disabled
     private boolean isSearchOpened = false;
     // Flag of show/hide search component
     private boolean showSearch = true;
+    private ProgressDialog dialog;
     private Toolbar mToolbar;
     private MenuItem mSearchAction;
     private EditText edtSeach;
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements
         // Initial DbModel with application context
         // DbModel.getSingleton(this.getApplicationContext());
         setContentView(R.layout.activity_main);
-
+        dialog = new ProgressDialog(this);
         // Start thread for checking internet connection
         ((MovieGangApp)this.getApplication()).initStateManager(getApplicationContext());
         initToolbar();
@@ -79,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements
         eListFragment = EventlistFragment.newInstance();
         handleBundleExtras();
         setupNavigationDrawerContent(navigationView);
-        Log.e("MAD", "onCreate");
     }
 
     // Reload dataset from models and redraw the list
@@ -87,9 +88,8 @@ public class MainActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         updateUserInfo();
-        Log.e("MAD", "onResume");
         try {
-            mListFragment.reloadDataset();
+            mListFragment.reloadDataset(0);
             eListFragment.reloadDataset();
         } catch (Exception e){
 
@@ -205,9 +205,10 @@ public class MainActivity extends AppCompatActivity implements
 
     private void doSearch(String movieTitle) {
         // TODO: send input string from searching bar to MovieActivity
-        Intent intent = new Intent(getBaseContext(), MovieActivity.class);
+        ((MovieGangApp)getApplication()).movieModel.searchMovieByTitle(movieTitle, this);
+        /*Intent intent = new Intent(getBaseContext(), MovieActivity.class);
         intent.putExtra("title", movieTitle);
-        startActivity(intent);
+        startActivity(intent);*/
     }
     /**
      * Initial drawer layout
@@ -345,6 +346,20 @@ public class MainActivity extends AppCompatActivity implements
     private void logout() {
         ((MovieGangApp) getApplication()).logout();
         updateUserInfo();
+    }
+
+    @Override
+    public void showProgressdialog(String str) {
+        dialog.setMessage(str);
+        dialog.show();
+    }
+
+    @Override
+    public void dismissProgressdialog() {
+        if (dialog.isShowing()) {
+            dialog.dismiss();
+            mListFragment.reloadDataset(1);
+        }
     }
 }
 //

@@ -1,5 +1,6 @@
 package edu.ricky.mada2.controller;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.ImageView;
@@ -14,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import edu.ricky.mada2.MovieActivity;
+import edu.ricky.mada2.ProgressDialogActivity;
 import edu.ricky.mada2.R;
 import edu.ricky.mada2.model.Movie;
 import edu.ricky.mada2.model.MovieModel;
@@ -24,7 +26,7 @@ import edu.ricky.mada2.utility.OmdbAsyncTask;
  */
 
 
-public class MovieDetailController {
+public class MovieDetailController implements ProgressDialogActivity{
     private MovieModel model;
     private MovieActivity mActivity;
     private TextView mTitle;
@@ -39,6 +41,7 @@ public class MovieDetailController {
     private TextView mActors;
     private Movie tempMovie;
     private boolean saveState;
+    private String mID;
 
     public MovieDetailController(MovieActivity mActivity) {
         this.mActivity = mActivity;
@@ -58,9 +61,13 @@ public class MovieDetailController {
 
     public void loadMovieByID(String movieID, boolean longPlot) {
         // if network connected
-        tempMovie = model.getMovieById(movieID, mActivity);
-        displayMovieDetail();
+        mID = movieID;
+        tempMovie = model.getMovieById(movieID, this);
         // if not connected
+        try {
+            displayMovieDetail();
+        } catch(Exception e) {
+        }
 
     }
 
@@ -80,7 +87,13 @@ public class MovieDetailController {
         title = String.format("%s (%s)", tempMovie.getTitle(), tempMovie.getYear());
         this.mTitle.setText(title);
         this.mRatingBar.setRating(((float) tempMovie.getMyRating()));
-        Picasso.with(mActivity).load(tempMovie.getIconUrl()).into(mPoster);
+        if(tempMovie.getImage()!=null) {
+            Log.e("LoadImg", "Local");
+            mPoster.setImageBitmap(tempMovie.getImage());
+        } else {
+            Log.e("LoadImg", "OMDB");
+            Picasso.with(mActivity).load(tempMovie.getIconUrl()).into(mPoster);
+        }
         mRated.setText(tempMovie.getMovieRated());
         mRuntime.setText(tempMovie.getMovieRuntime());
         mLang.setText(tempMovie.getMovieLang());
@@ -91,7 +104,6 @@ public class MovieDetailController {
     }
 
     public void saveMovie() {
-        Log.e("saveMovie", "loadMovieByID(tempMovie.getImdbId(), false)");
         saveState = true;
         loadMovieByID(tempMovie.getImdbId(), false);
     }
@@ -124,7 +136,6 @@ public class MovieDetailController {
         if(saveState) {
             if(result) {
                 tempMovie.setMyRating(mRatingBar.getRating());
-                Log.e("saveMovie", tempMovie.getJsonString());
                 if(!model.addMovie(tempMovie)) model.updateMovie(tempMovie);
             } else
                 Toast.makeText(mActivity.getApplicationContext(), "Save Movie failed",
@@ -132,8 +143,7 @@ public class MovieDetailController {
         } else {
             if(result) {
                 try {
-                    tempMovie.setMyRating(model.getMovieById(tempMovie.getImdbId(), mActivity).getMyRating());
-                    Log.e("displayMovieDetail", tempMovie.getJsonString());
+                    tempMovie.setMyRating(model.getMovieById(tempMovie.getImdbId(), this).getMyRating());
                 } catch (Exception e) {
 
                 } finally {
@@ -151,5 +161,19 @@ public class MovieDetailController {
         Intent intent = new Intent(mActivity.getBaseContext(), EventActivity.class);
         intent.putExtra("movieID", tempMovie.getImdbId());
         mActivity.startActivity(intent);
+    }
+
+    @Override
+    public void showProgressdialog(String str) {
+        mActivity.dialog.setMessage(str);
+        mActivity.dialog.show();
+    }
+
+    @Override
+    public void dismissProgressdialog() {
+        if (mActivity.dialog.isShowing()) {
+            mActivity.dialog.dismiss();
+            loadMovieByID(mID, false);
+        }
     }
 }

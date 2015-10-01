@@ -7,11 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.firebase.client.Firebase;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import edu.ricky.mada2.utility.BoundedLruCache;
 
@@ -66,7 +63,6 @@ public class DbModel extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        Log.e("MAD", "DB onCreate()");
         // create movies table
         db.execSQL(CREATE_MOVIE_TABLE);
         // create events table
@@ -178,7 +174,6 @@ public class DbModel extends SQLiteOpenHelper {
         int i = 0;
         // 3. go over each row, build movies and add it to list
         for (Map.Entry<String, Movie> entry : movieMap.entrySet()) {
-            Log.e("Order",entry.getValue().getTitle());
             insertMovie(entry.getValue(), i);
             i ++;
         }

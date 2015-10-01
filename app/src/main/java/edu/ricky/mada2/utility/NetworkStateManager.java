@@ -46,12 +46,10 @@ public class NetworkStateManager {
         NetworkInfo nf=cn.getActiveNetworkInfo();
         if(nf != null && nf.isConnected()==true )
         {
-            Log.e("Connection", String.valueOf(isConnected));
             isConnected = true;
         }
         else
         {
-            Log.e("Connection", String.valueOf(isConnected));
             isConnected = false;
         }
     }

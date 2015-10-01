@@ -1,5 +1,6 @@
 package edu.ricky.mada2;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -20,7 +21,8 @@ import edu.ricky.mada2.controller.MovieDetailController;
 
 import static android.widget.Button.*;
 
-public class MovieActivity extends AppCompatActivity implements ProgressDialogActivity{
+public class MovieActivity extends AppCompatActivity{
+    public ProgressDialog dialog;
     Toolbar mToolbar;
     CircleButton mSaveMovieButton;
     CircleButton mAddEventButton;
@@ -30,6 +32,7 @@ public class MovieActivity extends AppCompatActivity implements ProgressDialogAc
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie);
+        dialog = new ProgressDialog(this);
         // Ensure toolbar is assigned to current activity
         mToolbar = (Toolbar) findViewById(R.id.toolbar_movie);
         mSaveMovieButton = (CircleButton) findViewById(R.id.save_movie_button);
@@ -97,14 +100,4 @@ public class MovieActivity extends AppCompatActivity implements ProgressDialogAc
             mController.saveMovie();
         }
     };
-
-    @Override
-    public void showProgressdialog(String str) {
-
-    }
-
-    @Override
-    public void dismissProgressdialog() {
-
-    }
 }

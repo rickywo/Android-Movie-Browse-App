@@ -1,5 +1,6 @@
 package edu.ricky.mada2.model;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -42,6 +43,7 @@ public class Movie implements Serializable {
     private String movieImdbRating;
     private String movieImdbId;*/
     private JSONObject movieJson;
+    private Bitmap image;
 
     // self-defined variablea
     private float movieMyRating; // Personal rating of this movie
@@ -115,12 +117,20 @@ public class Movie implements Serializable {
 
         try {
             setMyRating(tempObject.getDouble(MY_RATING));
-            Log.e("Movie",String.valueOf(tempObject.getDouble(MY_RATING)) );
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         this.movieEvents = new ArrayList<>();
+        this.image = null;
+    }
+
+    public void setImage(Bitmap image) {
+        this.image = image;
+    }
+
+    public Bitmap getImage() {
+        return this.image;
     }
 
     public String getJsonString() {
