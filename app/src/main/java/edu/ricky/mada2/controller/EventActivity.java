@@ -1,7 +1,9 @@
 package edu.ricky.mada2.controller;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
@@ -39,10 +41,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Timer;
 
 import edu.ricky.mada2.MainActivity;
 import edu.ricky.mada2.MapsActivity;
 import edu.ricky.mada2.MovieGangApp;
+import edu.ricky.mada2.ProgressDialogActivity;
 import edu.ricky.mada2.R;
 import edu.ricky.mada2.model.DbModel;
 import edu.ricky.mada2.model.Event;
@@ -51,7 +55,7 @@ import edu.ricky.mada2.model.Invitee;
 import edu.ricky.mada2.model.Movie;
 import edu.ricky.mada2.model.MovieModel;
 
-public class EventActivity extends ActionBarActivity {
+public class EventActivity extends ActionBarActivity implements ProgressDialogActivity{
     // Request codes
     private final static int PICK_REQUEST = 1337; // Contact picker activity
     private final static int MAP_REQUEST = 1338;  // Map activity
@@ -82,6 +86,8 @@ public class EventActivity extends ActionBarActivity {
             CONTENT_URI = Contacts.People.CONTENT_URI;
         }
     }
+
+    private ProgressDialog dialog;
 
     final SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm");
     private ImageView mPoster;
@@ -164,9 +170,10 @@ public class EventActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
-        mModel = MovieModel.getSingleton();
+        mModel = MovieModel.getSingleton(getApplicationContext());
         eModel = EventModel.getSingleton();
         db = DbModel.getSingleton(getApplicationContext());
+        dialog = new ProgressDialog(this);
         getViews();
         setListeners();
         handleBundleExtras();
@@ -268,9 +275,11 @@ public class EventActivity extends ActionBarActivity {
             mLoc.setText(event.getLocation().toString());
             parseInviteesJsonString(event.getInvitees());
             Log.e("EventActivity", event.toString());
+            updateListInviteeButton();
         }
-        mTitle.setText(String.format("%s (%s)", movie.getTitle(), movie.getYear()));
-        updateListInviteeButton();
+        if(movie != null)
+            mTitle.setText(String.format("%s (%s)", movie.getTitle(), movie.getYear()));
+
     }
 
     private void setListeners() {
@@ -366,7 +375,7 @@ public class EventActivity extends ActionBarActivity {
     }
 
     private void onDatasetChanged() {
-        db.saveAllEvents(eModel.getEventMap());
+        //db.saveAllEvents(eModel.getEventMap());
     }
 
     private void backToMainActivity() {
@@ -375,17 +384,25 @@ public class EventActivity extends ActionBarActivity {
         startActivity(intent);
     }
 
+    class WaitingThread extends Thread {
+        EventActivity mActivity;
+        WaitingThread(EventActivity activity) {
+            super();
+            this.mActivity = activity;
+        }
+    }
+
     private void handleBundleExtras() {
         event = null;
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             String mID = extras.getString("movieID");
             String eID = extras.getString("eventID");
-            if (mID != null)
-                movie = mModel.getMovieById(mID);
-            else if (eID != null) {
+            if (mID != null) {
+                movie = mModel.getMovieById(mID, this);
+            } else if (eID != null) {
                 event = eModel.getEventById(eID);
-                movie = mModel.getMovieById(event.getMovieID());
+                movie = mModel.getMovieById(event.getMovieID(), this);
             }
 
         }
@@ -513,5 +530,19 @@ public class EventActivity extends ActionBarActivity {
 
     private void updateListInviteeButton() {
         mListInvitee.setText("+" + invitees.size());
+    }
+
+    @Override
+    public void showProgressdialog(String str) {
+        dialog.setMessage(str);
+        dialog.show();
+    }
+
+    @Override
+    public void dismissProgressdialog() {
+        if (dialog.isShowing()) {
+            dialog.dismiss();
+            parseDataToViews();
+        }
     }
 }

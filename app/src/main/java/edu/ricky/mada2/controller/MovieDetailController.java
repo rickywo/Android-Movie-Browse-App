@@ -14,7 +14,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import edu.ricky.mada2.MovieActivity;
-import edu.ricky.mada2.MovieGangApp;
 import edu.ricky.mada2.R;
 import edu.ricky.mada2.model.Movie;
 import edu.ricky.mada2.model.MovieModel;
@@ -43,7 +42,7 @@ public class MovieDetailController {
 
     public MovieDetailController(MovieActivity mActivity) {
         this.mActivity = mActivity;
-        model = MovieModel.getSingleton();
+        model = MovieModel.getSingleton(mActivity.getApplicationContext());
         mTitle = (TextView) mActivity.findViewById(R.id.toolbar_movie_title_textview);
         mRatingBar = (RatingBar) mActivity.findViewById(R.id.toolbar_movie_ratingBar);
         mPoster = (ImageView) mActivity.findViewById(R.id.toolbar_movie_poster_imageview);
@@ -59,21 +58,8 @@ public class MovieDetailController {
 
     public void loadMovieByID(String movieID, boolean longPlot) {
         // if network connected
-        if(((MovieGangApp) mActivity.getApplication()).isConnected()) {
-
-            OmdbAsyncTask task = new OmdbAsyncTask(this, mActivity, 0);
-            if (longPlot)
-                task.execute("i=" + movieID + "&" + "plot=full");
-            else
-                task.execute("i=" + movieID);
-        } else {
-            try {
-                Log.e("LoadMovieByID", model.getMovieById(movieID).getJsonString());
-                onLoadingFinished(new JSONObject(model.getMovieById(movieID).getJsonString()));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
+        tempMovie = model.getMovieById(movieID, mActivity);
+        displayMovieDetail();
         // if not connected
 
     }
@@ -146,7 +132,7 @@ public class MovieDetailController {
         } else {
             if(result) {
                 try {
-                    tempMovie.setMyRating(model.getMovieById(tempMovie.getImdbId()).getMyRating());
+                    tempMovie.setMyRating(model.getMovieById(tempMovie.getImdbId(), mActivity).getMyRating());
                     Log.e("displayMovieDetail", tempMovie.getJsonString());
                 } catch (Exception e) {
 

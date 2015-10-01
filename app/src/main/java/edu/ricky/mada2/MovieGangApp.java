@@ -1,6 +1,7 @@
 package edu.ricky.mada2;
 
 import android.app.Application;
+import android.app.ProgressDialog;
 import android.content.Context;
 
 import com.firebase.client.Firebase;
@@ -18,6 +19,7 @@ public class MovieGangApp extends Application {
     // For detecting network connection
     private NetworkStateManager myStateManager;
 
+
     // Login Status
     private boolean login_state;
     // Current login user reference (null if login state == false)
@@ -29,7 +31,8 @@ public class MovieGangApp extends Application {
         Firebase.setAndroidContext(this);
         // init models for this app
         eventModel = EventModel.getSingleton();
-        movieModel = MovieModel.getSingleton();
+        movieModel = MovieModel.getSingleton(getApplicationContext());
+
         // other setup code
     }
 
@@ -38,6 +41,7 @@ public class MovieGangApp extends Application {
             myStateManager = new NetworkStateManager(context);
         }
     }
+
 
     public boolean isConnected() {
         return myStateManager.isConnected;
@@ -68,4 +72,6 @@ public class MovieGangApp extends Application {
         setCurrentUser(null);
         setLoginState(false);
     }
+
+
 }

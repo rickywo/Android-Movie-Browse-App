@@ -20,7 +20,7 @@ import edu.ricky.mada2.controller.MovieDetailController;
 
 import static android.widget.Button.*;
 
-public class MovieActivity extends AppCompatActivity {
+public class MovieActivity extends AppCompatActivity implements ProgressDialogActivity{
     Toolbar mToolbar;
     CircleButton mSaveMovieButton;
     CircleButton mAddEventButton;
@@ -94,7 +94,17 @@ public class MovieActivity extends AppCompatActivity {
     private RatingBar.OnRatingBarChangeListener mOnRatingBarChangeListener = new RatingBar.OnRatingBarChangeListener() {
         @Override
         public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-            //mController.saveMovie();
+            mController.saveMovie();
         }
     };
+
+    @Override
+    public void showProgressdialog(String str) {
+
+    }
+
+    @Override
+    public void dismissProgressdialog() {
+
+    }
 }

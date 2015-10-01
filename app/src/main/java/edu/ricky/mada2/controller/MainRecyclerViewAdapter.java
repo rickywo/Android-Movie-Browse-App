@@ -68,10 +68,9 @@ public class MainRecyclerViewAdapter extends RecyclerView
     }
 
     public MainRecyclerViewAdapter(Context context) {
-        this.mModel = MovieModel.getSingleton();
+        this.mModel = MovieModel.getSingleton(context);
         this.db = DbModel.getSingleton(context);
         this.context = context;
-        load();
         reloadDataset();
     }
 
@@ -90,25 +89,13 @@ public class MainRecyclerViewAdapter extends RecyclerView
         holder.title.setText(mDataset.get(position).getTitle());
         holder.genre.setText(mDataset.get(position).getGenre());
         holder.year.setText(mDataset.get(position).getYear());
-        holder.plot.setText(mDataset.get(position).getPlot());
+        //holder.plot.setText(mDataset.get(position).getPlot());
         holder.rating.setText(Double.toString(mDataset.get(position).getMyRating()));
         Picasso.with(context)
                 .load(mDataset.get(position).getIconUrl())
                 .into(holder.poster
                 );
 
-    }
-
-    public void addItem(Movie dataObj, int index) {
-        mModel.addMovie(dataObj);
-        mDataset.add(index, dataObj);
-        notifyItemInserted(index);
-    }
-
-    public void deleteItem(int index) {
-        mModel.removeMovie(mDataset.get(index));
-        mDataset.remove(index);
-        notifyItemRemoved(index);
     }
 
     public void reloadDataset() {
@@ -127,22 +114,7 @@ public class MainRecyclerViewAdapter extends RecyclerView
 
     private void save() {
         //TODO: Save Movies in the Map into Sqlite
-        db.saveAllMovies(mModel.getMovieMap());
-        return;
-    }
-
-    private void load() {
-        //TODO: Load movies from Sqlite to Map
-        Map<String, String> map = db.getAllMovies();
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            try {
-                JSONObject jo = new JSONObject(entry.getValue());
-                Movie m = new Movie(jo);
-                mModel.addMovie(m);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
+        //db.saveAllMovies(mModel.getMovieMap());
         return;
     }
 
