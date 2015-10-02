@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import edu.ricky.mada2.MovieActivity;
 import edu.ricky.mada2.ProgressDialogActivity;
 import edu.ricky.mada2.R;
+import edu.ricky.mada2.model.BitmapLruCache;
 import edu.ricky.mada2.model.Movie;
 import edu.ricky.mada2.model.MovieModel;
 import edu.ricky.mada2.utility.OmdbAsyncTask;
@@ -28,6 +29,7 @@ import edu.ricky.mada2.utility.OmdbAsyncTask;
 
 public class MovieDetailController implements ProgressDialogActivity{
     private MovieModel model;
+    private BitmapLruCache bitmapLruCache;
     private MovieActivity mActivity;
     private TextView mTitle;
     private RatingBar mRatingBar;
@@ -46,6 +48,7 @@ public class MovieDetailController implements ProgressDialogActivity{
     public MovieDetailController(MovieActivity mActivity) {
         this.mActivity = mActivity;
         model = MovieModel.getSingleton(mActivity.getApplicationContext());
+        bitmapLruCache = BitmapLruCache.getSingleton();
         mTitle = (TextView) mActivity.findViewById(R.id.toolbar_movie_title_textview);
         mRatingBar = (RatingBar) mActivity.findViewById(R.id.toolbar_movie_ratingBar);
         mPoster = (ImageView) mActivity.findViewById(R.id.toolbar_movie_poster_imageview);
@@ -92,7 +95,8 @@ public class MovieDetailController implements ProgressDialogActivity{
             mPoster.setImageBitmap(tempMovie.getImage());
         } else {
             Log.e("LoadImg", "OMDB");
-            Picasso.with(mActivity).load(tempMovie.getIconUrl()).into(mPoster);
+            bitmapLruCache.loadBitmap(tempMovie.getIconUrl(), mPoster);
+            //Picasso.with(mActivity).load(tempMovie.getIconUrl()).into(mPoster);
         }
         mRated.setText(tempMovie.getMovieRated());
         mRuntime.setText(tempMovie.getMovieRuntime());

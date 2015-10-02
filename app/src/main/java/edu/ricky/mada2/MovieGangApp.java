@@ -6,6 +6,7 @@ import android.content.Context;
 
 import com.firebase.client.Firebase;
 
+import edu.ricky.mada2.model.BitmapLruCache;
 import edu.ricky.mada2.model.EventModel;
 import edu.ricky.mada2.model.MovieModel;
 import edu.ricky.mada2.model.User;
@@ -15,7 +16,7 @@ public class MovieGangApp extends Application {
 
     public EventModel eventModel;
     public MovieModel movieModel;
-
+    public BitmapLruCache bitmapLruCache;
     // For detecting network connection
     private NetworkStateManager myStateManager;
 
@@ -32,6 +33,7 @@ public class MovieGangApp extends Application {
         // init models for this app
         eventModel = EventModel.getSingleton();
         movieModel = MovieModel.getSingleton(getApplicationContext());
+        bitmapLruCache = BitmapLruCache.getSingleton();
 
         // other setup code
     }

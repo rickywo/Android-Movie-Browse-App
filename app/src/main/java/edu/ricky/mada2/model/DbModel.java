@@ -5,9 +5,18 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import edu.ricky.mada2.utility.BoundedLruCache;
@@ -16,7 +25,7 @@ import edu.ricky.mada2.utility.BoundedLruCache;
  * Created by Ricky Wu on 2015/9/5.
  */
 public class DbModel extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
     // Movie table column mapping
     private static final int IMDB_ID_COLUMN = 0;
     private static final int JSONSTRING_COLUMN = 1;
@@ -41,6 +50,12 @@ public class DbModel extends SQLiteOpenHelper {
         return singleton;
     }
 
+    // For non-activity class
+    public static DbModel getSingleton()
+    {
+        return singleton;
+    }
+
     private static final String CREATE_MOVIE_TABLE =
             "CREATE TABLE IF NOT EXISTS movies (" +
                     "id TEXT PRIMARY KEY NOT NULL," +
@@ -52,8 +67,15 @@ public class DbModel extends SQLiteOpenHelper {
                     "id TEXT PRIMARY KEY NOT NULL," +
                     "json VARCHAR NOT NULL )" ;
 
+    private static final String CREATE_IMAGE_TABLE =
+            "CREATE TABLE IF NOT EXISTS images (" +
+                    "id TEXT PRIMARY KEY NOT NULL," +
+                    "byte_blob BLOB," +
+                    "DateAdded DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP )";
+
     private static final String TABLE_MOVIES = "movies";
     private static final String TABLE_EVENTS = "events";
+    private static final String TABLE_IMAGES = "images";
 
     private DbModel(Context context) {
 
@@ -67,6 +89,8 @@ public class DbModel extends SQLiteOpenHelper {
         db.execSQL(CREATE_MOVIE_TABLE);
         // create events table
         db.execSQL(CREATE_EVENT_TABLE);
+        // create images table
+        db.execSQL(CREATE_IMAGE_TABLE);
     }
 
     @Override
@@ -74,6 +98,7 @@ public class DbModel extends SQLiteOpenHelper {
         // Drop older books table if existed
         db.execSQL("DROP TABLE IF EXISTS movies");
         db.execSQL("DROP TABLE IF EXISTS events");
+        db.execSQL("DROP TABLE IF EXISTS images");
         // create fresh books table
         this.onCreate(db);
 
@@ -104,6 +129,45 @@ public class DbModel extends SQLiteOpenHelper {
 
         // return movieMap
         return movieJsonMap;
+    }
+
+    /**
+     * Get all movie records from sqlite db
+     *
+     * @return Map object, entry <movie id string, movie JSONobject string>
+     */
+    public ArrayList<JSONObject> getAllMoviesTitleLike(String str) {
+        Map<String, JSONObject> movieJsonMap = new HashMap<>();
+
+
+        // 1. build the query
+        String query = "SELECT  * FROM " + TABLE_MOVIES + " ORDER BY " + "\"" + ORDER + "\"";
+
+        // 2. get reference to writable DB
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        // 3. go over each row, build book and add it to list
+        if (cursor.moveToFirst()) {
+            do {
+                try {
+                    JSONObject j = new JSONObject(cursor.getString(JSONSTRING_COLUMN));
+                    String title = j.getString("Title").toLowerCase();
+                    Log.e("Title", title);
+                    Log.e("str", str);
+                    if(j.getString("Title").toLowerCase().contains(str.toLowerCase())) {
+                        Log.e("Title", "Found");
+                        movieJsonMap.put(cursor.getString(IMDB_ID_COLUMN), j);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            } while (cursor.moveToNext());
+        }
+
+        // return movieMap
+        return new ArrayList<>(movieJsonMap.values());
     }
 
     //SELECT * FROM Orders WHERE Id=6;
@@ -177,6 +241,72 @@ public class DbModel extends SQLiteOpenHelper {
             insertMovie(entry.getValue(), i);
             i ++;
         }
+    }
+
+    /**
+     * insert image records to sqlite db
+     */
+    public boolean insertImage(String url, Bitmap bitmap, int maxCount) {
+        // TODO: Save all movie into sqlite db iteratively
+
+        // 1. get reference to writable DB
+        SQLiteDatabase db = this.getWritableDatabase();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] img_byte = baos.toByteArray();
+
+        // 2. insert movie in db
+        try {
+            ContentValues values = new ContentValues();
+            values.put("id", url);
+            values.put("byte_blob", img_byte);
+            db.insertWithOnConflict(TABLE_IMAGES, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+            if(getImageCount() > maxCount) {
+                removeEldImage();
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private int getImageCount() {
+        String query = "SELECT  COUNT(*) FROM " + TABLE_IMAGES;
+
+        // 1. get reference to writable DB
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor mCount= db.rawQuery(query, null);
+        mCount.moveToFirst();
+        return mCount.getInt(0);
+    }
+
+    private void removeEldImage() {
+        String query = "DELETE FROM images ORDER BY DateAdded ASC LIMIT 1";
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(query);
+    }
+
+    public Bitmap getImage(String key) {
+        byte[] img;
+
+
+        // 1. build the query
+        String query = "SELECT  * FROM " + TABLE_IMAGES + " WHERE " + ID + " = " + "\""+key+"\"";
+
+        // 2. get reference to writable DB
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+
+        // 3. go over each row, build book and add it to list
+        if (cursor.moveToFirst()) {
+            do {
+                 img = cursor.getBlob(1);
+            } while (cursor.moveToNext());
+            ByteArrayInputStream imageStream = new ByteArrayInputStream(img);
+            // return Bitmap
+            return BitmapFactory.decodeStream(imageStream);
+        }
+        return null;
     }
 
     /**

@@ -130,11 +130,11 @@ public class MainActivity extends AppCompatActivity implements
      */
     protected void handleMenuSearch() {
         ActionBar action = getSupportActionBar(); //get the actionbar
-        if (!((MovieGangApp) getApplication()).isConnected()) {
+        /*if (!((MovieGangApp) getApplication()).isConnected()) {
             Toast.makeText(getApplicationContext(), getResources().getString(R.string.NO_OMDB_SEARCH_FUNCTION),
                     Toast.LENGTH_SHORT).show();
             return;
-        }
+        }*/
         if (isSearchOpened) { //test if the search is open
 
             action.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar

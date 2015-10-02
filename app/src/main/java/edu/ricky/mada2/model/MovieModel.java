@@ -1,15 +1,9 @@
 package edu.ricky.mada2.model;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ImageView;
-
-import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,17 +12,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.ref.WeakReference;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import edu.ricky.mada2.ProgressDialogActivity;
-import edu.ricky.mada2.R;
 import edu.ricky.mada2.utility.BoundedLruCache;
 
 /**
@@ -63,78 +53,15 @@ public class MovieModel {
         loadMovies();
     }
 
-    class ImageDownloaderTask extends AsyncTask<String, Void, Bitmap> {
-        private final WeakReference<Movie> movieWeakReference;
-
-        public ImageDownloaderTask(Movie movie) {
-            movieWeakReference = new WeakReference<Movie>(movie);
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... params) {
-            return downloadBitmap(params[0]);
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            if (isCancelled()) {
-                bitmap = null;
-            }
-
-            if (movieWeakReference != null) {
-                Movie movie = movieWeakReference.get();
-                if (movie != null) {
-                    if (bitmap != null) {
-                        movie.setImage(bitmap);
-                    }
-                }
-            }
-        }
-
-        private Bitmap downloadBitmap(String url) {
-            HttpURLConnection urlConnection = null;
-            try {
-                URL uri = new URL(url);
-                urlConnection = (HttpURLConnection) uri.openConnection();
-                int statusCode = urlConnection.getResponseCode();
-                if (statusCode != HttpStatus.SC_OK) {
-                    return null;
-                }
-
-                InputStream inputStream = urlConnection.getInputStream();
-                if (inputStream != null) {
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    return bitmap;
-                }
-            } catch (Exception e) {
-                urlConnection.disconnect();
-                Log.w("ImageDownloader", "Error downloading image from " + url);
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-            }
-            return null;
-        }
-
-
-
-    }
     // Model Access
     public Movie getMovieById(String imdbId, ProgressDialogActivity activity)
     {
         Movie movie;
         if((movie = movieMap.get(imdbId))!=null) {
-            Log.d("getMovieById","getMovieById");
-            if(movie.getImage() == null)
-                new ImageDownloaderTask(movie).execute(movie.getIconUrl());
             return movie;
 
 
         } else if(getMovieFromDBbyID(imdbId)) {
-            Log.d("getMovieById","getMovieFromDBbyId");
-            if(movie.getImage() == null)
-                new ImageDownloaderTask(movie).execute(movie.getIconUrl());
             return movieMap.get(imdbId);
         } else {
             Log.d("getMovieById","OmdbAsyncTask");
@@ -165,14 +92,6 @@ public class MovieModel {
     public List<Movie> getSearchMovies()
     {
         return searchList;
-    }
-
-    public boolean addMovie(JSONObject j, Bitmap b) {
-        Movie m = new Movie(j);
-        m.setImage(Bitmap.createBitmap(b));
-        db.insertMovie(m);
-        this.movieMap.put(m.getImdbId(), m);
-        return true;
     }
 
     public boolean addMovie(JSONObject j) {
@@ -207,7 +126,7 @@ public class MovieModel {
 
         @Override
         protected void onPostExecute(Void result) {
-            for (int i = 0; i < mList.size() - 1; i++) {
+            for (int i = 0; i < mList.size(); i++) {
                 insertSearchList(mList.get(i));
             }
             pActivity.dismissProgressdialog();
@@ -215,7 +134,7 @@ public class MovieModel {
 
         @Override
         protected Void doInBackground(String... params) {
-            jsonObject = loadMovieJson(params[0]);
+            jsonObject = loadMovieJson("s=" + params[0] + "&r=json");
             try {
                 JSONArray ja = jsonObject.getJSONArray("Search");
                 Log.e("onPostExecute", ja.toString());
@@ -225,6 +144,10 @@ public class MovieModel {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+            } catch (NullPointerException ne) {
+                Log.e("Load Movie", "DB");
+                mList = db.getAllMoviesTitleLike(params[0]);
+                Log.e("Load Movie", mList.toString());
             }
             return null;
         }
@@ -234,7 +157,7 @@ public class MovieModel {
         // TODO: search from OMDB if connected to internet
         this.searchList.clear();
         SearchMovieAsync task = new SearchMovieAsync(activity);
-        task.execute("s=" + title + "&r=json");
+        task.execute(title);
     }
 
     public void insertSearchList(JSONObject jsonObject) {
@@ -287,19 +210,13 @@ public class MovieModel {
 
         @Override
         protected void onPostExecute(Void result) {
-            addMovie(jsonObject, image);
+            addMovie(jsonObject);
             pActivity.dismissProgressdialog();
         }
 
         @Override
         protected Void doInBackground(String... params) {
             jsonObject = loadMovieJson(params[0]);
-            try {
-                image = downloadBitmap(jsonObject.get("Poster").toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
             return null;
         }
 
@@ -323,32 +240,6 @@ public class MovieModel {
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
-            }
-            return null;
-        }
-
-        private Bitmap downloadBitmap(String url) {
-            HttpURLConnection urlConnection = null;
-            try {
-                URL uri = new URL(url);
-                urlConnection = (HttpURLConnection) uri.openConnection();
-                int statusCode = urlConnection.getResponseCode();
-                if (statusCode != HttpStatus.SC_OK) {
-                    return null;
-                }
-
-                InputStream inputStream = urlConnection.getInputStream();
-                if (inputStream != null) {
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    return bitmap;
-                }
-            } catch (Exception e) {
-                urlConnection.disconnect();
-                Log.w("ImageDownloader", "Error downloading image from " + url);
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
             }
             return null;
         }
