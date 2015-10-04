@@ -226,7 +226,6 @@ public class Movie implements Serializable {
         try {
             return movieJson.getDouble(MY_RATING);
         } catch (JSONException e) {
-            e.printStackTrace();
             return 0;
         }
     }

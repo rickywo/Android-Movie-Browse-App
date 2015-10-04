@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements
         public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
             if (event == null || event.getAction() == KeyEvent.ACTION_UP) {
                 doSearch(v.getText().toString());
-                v.setText("");
             }
 
             return (true);
@@ -77,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements
             setupNavigationDrawerContent(navigationView);
         }
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        mListFragment =  MovielistFragment.newInstance();
+        mListFragment = MovielistFragment.newInstance();
         eListFragment = EventlistFragment.newInstance();
         handleBundleExtras();
         setupNavigationDrawerContent(navigationView);
@@ -89,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onResume();
         updateUserInfo();
         try {
-            mListFragment.reloadDataset(0);
+            //mListFragment.reloadDataset(0);
             eListFragment.reloadDataset();
         } catch (Exception e){
 
@@ -210,6 +209,20 @@ public class MainActivity extends AppCompatActivity implements
         intent.putExtra("title", movieTitle);
         startActivity(intent);*/
     }
+
+    private void showSearchPage() {
+        if(edtSeach!=null) {
+            doSearch(edtSeach.getText().toString());
+        }
+        mListFragment.reloadDataset(1);
+        switchFragment(0);
+    }
+
+    private void showMyMovies() {
+        mListFragment.reloadDataset(0);
+        switchFragment(0);
+    }
+
     /**
      * Initial drawer layout
     */
@@ -250,7 +263,15 @@ public class MainActivity extends AppCompatActivity implements
                             case R.id.menu_my_movies:
                                 menuItem.setChecked(true);
                                 show(menuItem.getTitle().toString());
-                                switchFragment(0);
+                                showMyMovies();
+                                // Show search bar
+                                mSearchAction.setVisible(true);
+                                mDrawerLayout.closeDrawer(GravityCompat.START);
+                                return true;
+                            case R.id.menu_search:
+                                menuItem.setChecked(true);
+                                show(menuItem.getTitle().toString());
+                                showSearchPage();
                                 // Show search bar
                                 mSearchAction.setVisible(true);
                                 mDrawerLayout.closeDrawer(GravityCompat.START);

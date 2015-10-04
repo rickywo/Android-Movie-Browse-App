@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import edu.ricky.mada2.utility.BoundedLruCache;
+
 /**
  * Created by Ricky Wu on 2015/9/3.
  */
@@ -39,7 +41,7 @@ public class EventModel {
 
 
     private EventModel() {
-        this.eventMap = new HashMap<>();
+        this.eventMap = new BoundedLruCache<>(5);
         ref.addChildEventListener(new ChildEventListener() {
             // Retrieve new posts as they are added to the database
             @Override

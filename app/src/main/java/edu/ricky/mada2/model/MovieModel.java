@@ -95,10 +95,14 @@ public class MovieModel {
     }
 
     public boolean addMovie(JSONObject j) {
-        Movie m = new Movie(j);
-        db.insertMovie(m);
-        this.movieMap.put(m.getImdbId(), m);
-        return true;
+        if(j != null) {
+            Movie m = new Movie(j);
+            db.insertMovie(m);
+            this.movieMap.put(m.getImdbId(), m);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean addMovie(Movie movie) {

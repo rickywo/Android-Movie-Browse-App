@@ -30,6 +30,7 @@ public class MovieGangApp extends Application {
     public void onCreate() {
         super.onCreate();
         Firebase.setAndroidContext(this);
+        Firebase.getDefaultConfig().setPersistenceEnabled(true);
         // init models for this app
         eventModel = EventModel.getSingleton();
         movieModel = MovieModel.getSingleton(getApplicationContext());

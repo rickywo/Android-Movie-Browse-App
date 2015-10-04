@@ -223,7 +223,6 @@ public class DbModel extends SQLiteOpenHelper {
 
     public boolean insertMovie(Movie movie, int order) {
         return insertMovie(movie);
-
     }
 
     /**
@@ -261,7 +260,9 @@ public class DbModel extends SQLiteOpenHelper {
             values.put("id", url);
             values.put("byte_blob", img_byte);
             db.insertWithOnConflict(TABLE_IMAGES, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-            if(getImageCount() > maxCount) {
+
+            while(getImageCount() >= maxCount) {
+                Log.e("Image Count", String.valueOf(getImageCount()));
                 removeEldImage();
             }
             return true;
@@ -281,7 +282,8 @@ public class DbModel extends SQLiteOpenHelper {
     }
 
     private void removeEldImage() {
-        String query = "DELETE FROM images ORDER BY DateAdded ASC LIMIT 1";
+        String query = "DELETE FROM images WHERE id IN " +
+                "(SELECT id FROM images ORDER BY DateAdded LIMIT 1)";
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL(query);
     }

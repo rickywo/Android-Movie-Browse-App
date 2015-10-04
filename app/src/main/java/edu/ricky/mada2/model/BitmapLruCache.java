@@ -106,7 +106,7 @@ public class BitmapLruCache {
                     if (bitmap != null) {
                         imageView.setImageBitmap(bitmap);
                         addBitmapToMemoryCache(url, bitmap);
-                        db.insertImage(url, bitmap, 15);
+                        db.insertImage(url, bitmap, 10);
                     } else {
                         Drawable placeholder = imageView.getContext().getResources().getDrawable(R.drawable.placeholder);
                         imageView.setImageDrawable(placeholder);

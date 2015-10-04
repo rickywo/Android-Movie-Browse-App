@@ -6,6 +6,10 @@
             android:icon="@drawable/ic_movie_black_24dp"
             android:title="My Movies" />
         <item
+            android:id="@+id/menu_search"
+            android:icon="@drawable/ic_search_black_24dp"
+            android:title="Search Results" />
+        <item
             android:id="@+id/menu_my_events"
             android:icon="@drawable/ic_event_available_black_24dp"
             android:title="My Events" />
